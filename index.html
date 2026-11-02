@@ -7,7 +7,8 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>RIAS Member Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{--g:#1a4d2e;--gd:#0f2d19;--gold:#c9a84c;--cream:#f4f3ec;--lg:#e8f0eb;--lgold:#fdf8ee;--red:#b3261e;--ok:#1b7a3d;--tx:#1d2b22;--mut:#6b776f}
@@ -27,7 +28,7 @@ main{max-width:680px;margin:0 auto;padding:16px 16px 100px}
 .hero:after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:rgba(201,168,76,.18)}
 .hero .hi{font-size:13px;opacity:.85}.hero .nm{font-size:19px;font-weight:700;margin-bottom:10px}
 .hero .l{font-size:12px;opacity:.85}.hero .v{font-size:36px;font-weight:700;line-height:1.1;color:#fff}
-.hero.neg{background:linear-gradient(135deg,#8a2a24,#5b1511)}
+.hero.neg,.hero.neg .v,.hero.neg .l,.hero.neg .nm,.hero.neg .hi{color:#fff}.hero.neg{background:linear-gradient(135deg,#8a2a24,#5b1511)}
 .pill{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:99px;background:rgba(255,255,255,.18);font-size:12px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .stat{background:var(--lg);border-radius:14px;padding:12px}.stat.gold{background:var(--lgold);border:1px solid #eadcae}
@@ -54,6 +55,23 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid 
 nav button{flex:1;max-width:150px;border:0;background:none;font-family:inherit;color:var(--mut);padding:6px 4px;border-radius:12px;font-size:11px;position:relative;cursor:pointer}
 nav button i{display:block;font-style:normal;font-size:20px;line-height:1.2}nav button.on{color:var(--g);font-weight:700;background:var(--lg)}
 nav .dot{position:absolute;top:2px;right:22%;background:var(--red);color:#fff;border-radius:99px;font-size:10px;min-width:16px;height:16px;line-height:16px;font-style:normal}
+.mst{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;font-size:14px;font-weight:600}.mst span{font-size:22px}
+.mst.ok{background:var(--lg);color:var(--g)}.mst.due{background:#fdf0cf;color:#7a5200}.mst.late{background:#fdeceb;color:var(--red)}
+.strip{display:flex;gap:4px;margin-top:12px}.mo{flex:1;text-align:center;font-size:11px;color:var(--mut)}
+.mo i{display:block;width:34px;height:34px;border-radius:50%;margin:0 auto 3px;line-height:34px;font-style:normal;font-weight:700;font-size:15px}
+.mo i.paid{background:var(--ok);color:#fff}.mo i.late{background:#fbe3e1;color:var(--red)}.mo i.due{background:#fdf0cf;color:#8a5a00}.mo i.future,.mo i.na{background:#eef0ee;color:#9aa5a0}
+.gt th.c,.gt td.c{text-align:center;padding:6px 2px}.gt td:first-child{white-space:nowrap;font-size:13px;padding-right:6px}
+.gt th{padding:7px 1px!important;font-size:11px;border-radius:0!important}.gt td:first-child{font-size:12px;max-width:62px;overflow:hidden;text-overflow:ellipsis}.gc{width:33px;height:36px;border-radius:10px;border:0;font:700 15px inherit;font-family:inherit;cursor:pointer}
+.gc.paid{background:var(--ok);color:#fff}.gc.late{background:#fbe3e1;color:var(--red)}.gc.due{background:#fdf0cf;color:#8a5a00}.gc.future{background:#eef0ee;color:#9aa5a0}.gc.na{background:#f4f4f4;color:#ccc}
+.verse{background:linear-gradient(135deg,#fffdf5,#f7efd8);border:1px solid #eadcae;text-align:center}
+.verse .vt{font-size:12px;color:var(--g);font-weight:700}.verse .ar{font-family:'Amiri','Scheherazade New',serif;font-size:25px;line-height:2.1;color:#0f2d19;margin:8px 0}
+.verse .bn{font-size:14px;line-height:1.6}.verse .src{font-size:12px;color:#8a6f1f;margin:6px 0 10px}
+a.btn{display:inline-block;text-decoration:none}
+@media(max-width:400px){nav button{font-size:10px;padding:6px 1px}nav button i{font-size:18px}nav{padding-left:2px;padding-right:2px}}
+#pr{display:none}
+.nt{border-radius:14px;padding:12px;margin-top:10px;background:var(--lgold);border:1px solid #eadcae}.nt.pin{border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,76,.25)}
+.nt b{color:#6b5413}.nt p{margin:4px 0 0;font-size:14px;white-space:pre-wrap}textarea{width:100%;padding:12px;border:1.5px solid #cfd8d2;border-radius:10px;font:16px inherit;font-family:inherit;min-height:80px}
+@media print{body>*:not(#pr){display:none!important}#pr{display:block!important}body{background:#fff}#pr table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}#pr th{background:#1a4d2e!important;color:#fff!important;padding:6px;text-align:left;-webkit-print-color-adjust:exact;print-color-adjust:exact}#pr td{border:1px solid #ccc;padding:6px}#pr .r{text-align:right}@page{margin:14mm}}
 </style>
 </head>
 <body>
@@ -89,6 +107,7 @@ nav .dot{position:absolute;top:2px;right:22%;background:var(--red);color:#fff;bo
   <nav id="nav"></nav>
 </div>
 
+<div id="pr"></div>
 <script>
 const SB_URL='https://ofzjgvkfhhrikqshqqkt.supabase.co';
 const SB_KEY='sb_publishable_XzXm84AzYTliIGSEpM7vqg_MGO4pUL-';
@@ -152,9 +171,9 @@ sb.auth.onAuthStateChange((ev,session)=>{
   if(ev==='SIGNED_IN'||ev==='INITIAL_SESSION'){if(session)setTimeout(boot,0);else show('auth')}
 });
 
-let S={tab:'home',sel:null},D={m:[],c:[],l:[]};
+let S={tab:'home',sel:null},D={m:[],c:[],q:[],a:[],n:[],x:[],s:{}};
 const sumC=id=>D.c.filter(x=>x.member_id===id&&x.is_paid!==false).reduce((s,x)=>s+Number(x.amount),0);
-const LN=id=>D.l.find(x=>x.member_id===id)||{total_disbursed:0,total_repaid:0,outstanding:0};
+const LN=id=>{const q=D.q.filter(x=>x.member_id===id),d=q.reduce((s,x)=>s+Number(x.amount),0),r=q.reduce((s,x)=>s+Number(x.paid),0);return{total_disbursed:d,total_repaid:r,outstanding:d-r}};
 const ini=n=>esc((n||'?').trim().charAt(0).toUpperCase());
 function ring(p,col,lbl){const r=42,C=2*Math.PI*r,o=C*(1-Math.min(p,100)/100);return`<div class="ring"><svg width="104" height="104"><circle cx="52" cy="52" r="${r}" fill="none" stroke="#e4e8e5" stroke-width="11"/><circle cx="52" cy="52" r="${r}" fill="none" stroke="${col}" stroke-width="11" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${o}"/></svg><div class="c">${p}%<small>${lbl}</small></div></div>`}
 
@@ -169,23 +188,26 @@ async function boot(){
   S={tab:'home',sel:null};await load();render()}
 
 async function load(){
-  const[m,c,l]=await Promise.all([sb.from('members').select('*').order('created_at'),sb.from('contributions').select('*').order('phase').order('year').order('month'),sb.from('loans').select('*')]);
-  D={m:m.data||[],c:c.data||[],l:l.data||[]};
-  const e=m.error||c.error||l.error;if(e)$('main').innerHTML=`<div class="card"><div class="msg e">${esc(e.message)}</div></div>`}
+  const[m,c,q,n,st]=await Promise.all([sb.from('members').select('*').order('created_at'),sb.from('contributions').select('*').order('phase').order('year').order('month'),sb.from('qard_entries').select('*').order('loan_date'),sb.from('notices').select('*').order('created_at',{ascending:false}),sb.from('settings').select('*')]);
+  let a={data:[]},x={data:[]};if(isAdmin){[a,x]=await Promise.all([sb.from('audit_log').select('*').order('created_at',{ascending:false}).limit(80),sb.from('external_loans').select('*').order('loan_date')])}
+  D={m:m.data||[],c:c.data||[],q:q.data||[],a:a.data||[],n:n.data||[],x:x.data||[],s:Object.fromEntries((st.data||[]).map(r=>[r.key,r.value]))};
+  const e=m.error||c.error||q.error;if(e)$('main').innerHTML=`<div class="card"><div class="msg e">${esc(e.message)}</div></div>`}
 
 function go(t){S.tab=t;S.sel=null;render();scrollTo(0,0)}
 function render(){
   const pend=D.m.filter(x=>!x.is_approved).length;
-  const tabs=isAdmin?[['home','📊','ড্যাশবোর্ড'],['mem','👥','সদস্য'],['appr','✅','অনুমোদন',pend],['prof','👤','প্রোফাইল']]:[['home','🏠','হোম'],['dep','💰','জমা'],['loan','🤝','কর্জ'],['prof','👤','প্রোফাইল']];
-  $('nav').innerHTML=tabs.map(t=>`<button class="${S.tab===t[0]?'on':''}" onclick="go('${t[0]}')"><i>${t[1]}</i>${t[2]}${t[3]?`<i class="dot">${t[3]}</i>`:''}</button>`).join('');
+  const tabs=isAdmin?[['home','📊','ড্যাশবোর্ড'],['mon','📅','মাসিক'],['mem','👥','সদস্য'],['ext','🤝','বহিরাগত'],['notice','📢','নোটিশ'],['more','☰','আরও',pend]]:[['home','🏠','হোম'],['dep','💰','জমা'],['loan','🤝','কর্জ'],['prof','👤','প্রোফাইল']];
+  const sub=['appr','log','prof'];
+  $('nav').innerHTML=tabs.map(t=>`<button class="${S.tab===t[0]||(isAdmin&&t[0]==='more'&&sub.includes(S.tab))?'on':''}" onclick="go('${t[0]}')"><i>${t[1]}</i>${t[2]}${t[3]?`<i class="dot">${t[3]}</i>`:''}</button>`).join('');
   let h='';
   if(S.sel){h=memberPage(S.sel,true)}
-  else if(S.tab==='prof')h=profile();
-  else if(isAdmin)h=S.tab==='home'?adminHome():S.tab==='mem'?adminList():approvals();
-  else h=memberPage(me,false,S.tab);
+  else if(isAdmin){const back=sub.includes(S.tab)?`<button class="btn sm out" onclick="go('more')" style="margin-bottom:12px">← আরও</button>`:'';
+    h=back+(S.tab==='home'?adminHome():S.tab==='mon'?monthPage():S.tab==='mem'?adminList():S.tab==='ext'?extPage():S.tab==='notice'?noticePage():S.tab==='more'?morePage():S.tab==='log'?auditPage():S.tab==='appr'?approvals():profile())}
+  else h=S.tab==='prof'?profile():memberPage(me,false,S.tab);
   $('main').innerHTML=h}
 
 function profile(){return`<div class="card" style="text-align:center"><div class="av" style="margin:0 auto 10px;width:70px;height:70px;font-size:28px">${ini(me.name)}</div><h2 style="justify-content:center;font-size:18px">${esc(me.name)}</h2><div style="color:var(--mut);font-size:14px">${esc(me.email)}</div><div style="margin-top:8px"><span class="badge">${isAdmin?'MD / Admin':'সদস্য'}</span></div>${me.joined_date?`<div style="margin-top:8px;color:var(--mut);font-size:13px">যোগদান: ${esc(me.joined_date)}</div>`:''}</div>
+<div class="card"><h2>📄 আমার স্টেটমেন্ট</h2><div class="grid"><button class="btn" onclick="printDoc(stmt(me))">PDF</button><button class="btn gold" onclick="xlMember(me)">Excel</button></div></div>
 <div class="card"><button class="btn out" style="width:100%;margin-bottom:10px" onclick="show('reset')">🔑 পাসওয়ার্ড বদলান</button><button class="btn red" style="width:100%" onclick="sb.auth.signOut()">বের হই</button></div><div class="foot">RIAS • ঐক্য • দায়িত্বশীলতা • ইসলামি মূল্যবোধ</div>`}
 
 /* member pages */
@@ -198,22 +220,27 @@ function memberPage(m,adm,tab='home'){
   const stats=`<div class="grid"><div class="kpi k1"><div class="l">মোট জমা</div><div class="v">${bn(tot)}</div></div><div class="kpi ${out>0?'k3':'k1'}"><div class="l">বকেয়া কর্জ</div><div class="v">${bn(out)}</div></div></div>`;
   const phase=`<div class="card"><h2>📈 পর্যায় অনুযায়ী জমা</h2>${Object.keys(byPh).length?Object.keys(byPh).map(p=>`<div class="hb"><span class="n">পর্যায় ${p}</span><div class="bar"><i style="width:${byPh[p]/mx*100}%"></i></div><b>${bn(byPh[p])}</b></div>`).join(''):'<div class="empty">কোনো জমা নেই</div>'}</div>`;
   const deposits=`<div class="card"><h2>💰 জমার তালিকা</h2>${rows?`<table><tr><th>বিবরণ</th><th class="r">পরিমাণ</th><th class="r">অবস্থা</th></tr>${rows}<tr class="tot"><td>মোট</td><td class="r">${bn(tot)}</td><td></td></tr></table>`:'<div class="empty">কোনো জমার তথ্য নেই</div>'}</div>`;
-  const loan=`<div class="card"><h2>🤝 কর্জে হাসানা</h2>${dis?`<div class="ringwrap">${ring(pct,'#1b7a3d','পরিশোধ')}<div style="flex:1"><div class="stat gold"><div class="l">মোট গ্রহণ</div><div class="v">${bn(dis)}</div></div><div class="stat" style="margin-top:8px"><div class="l">পরিশোধিত</div><div class="v">${bn(rep)}</div></div></div></div><div class="stat gold" style="margin-top:12px"><div class="l">বকেয়া</div><div class="v neg">${bn(out)}</div></div>`:'<div class="empty">কোনো কর্জ নেই 🌿</div>'}</div>`;
+  const qs=D.q.filter(x=>x.member_id===id);
+  const qcards=qs.map(x=>{const am=+x.amount,pd=+x.paid||0,rm=am-pd,pc=am?Math.round(pd/am*100):0,st=pd>=am?['পরিশোধিত','']:pd>0?['আংশিক','w']:['বাকি','w'];
+    return`<div style="border:1px solid #e3e9e5;border-radius:14px;padding:12px;margin-top:10px"><div class="row"><b>${esc(x.purpose||'কর্জ')}</b><span class="badge ${st[1]}">${st[0]}</span></div><small style="color:var(--mut)">${esc(x.loan_date||'')}${x.due_date?' • শেষ তারিখ '+esc(x.due_date):''}</small>
+    <div class="grid3" style="margin-top:8px"><div><small style="color:var(--mut)">গ্রহণ</small><br><b>${bn(am)}</b></div><div><small style="color:var(--mut)">পরিশোধ</small><br><b>${bn(pd)}</b></div><div><small style="color:var(--mut)">বাকি</small><br><b class="${rm>0?'neg':'pos'}">${bn(rm)}</b></div></div>
+    <div class="bar"><i style="width:${pc}%"></i></div>${adm?`<div style="display:flex;gap:6px;margin-top:6px"><button class="btn sm" onclick="payQ('${x.id}')">+ কিস্তি</button><button class="btn sm out" onclick="editQ('${x.id}')">✎ সংশোধন</button><button class="btn sm red" onclick="delQ('${x.id}')">✕</button></div>`:''}</div>`}).join('');
+  const loan=`<div class="card"><h2>🤝 কর্জে হাসানা</h2>${dis?`<div class="ringwrap">${ring(pct,'#1b7a3d','পরিশোধ')}<div style="flex:1"><div class="stat gold"><div class="l">মোট গ্রহণ</div><div class="v">${bn(dis)}</div></div><div class="stat" style="margin-top:8px"><div class="l">পরিশোধিত</div><div class="v">${bn(rep)}</div></div></div></div><div class="stat gold" style="margin-top:12px"><div class="l">মোট বকেয়া</div><div class="v neg">${bn(out)}</div></div><h2 style="margin:16px 0 0">বিস্তারিত (${qs.length}টি)</h2>${qcards}`:'<div class="empty">কোনো কর্জ নেই 🌿</div>'}</div>`;
   let body;
   if(adm)body=hero+stats+phase+deposits+loan+adminEdit(m,c,l);
-  else body=tab==='dep'?phase+deposits:tab==='loan'?loan:hero+stats+`<div class="card"><h2>💚 আপনার অগ্রগতি</h2><div class="ringwrap">${ring(pct,'#c9a84c','কর্জ শোধ')}<div style="font-size:13px;color:var(--mut);flex:1">${dis?`আপনি মোট ${bn(dis)} কর্জ নিয়েছেন, ${bn(rep)} পরিশোধ করেছেন।`:'আপনার কোনো কর্জ নেই। আলহামদুলিল্লাহ।'}</div></div></div>`+phase;
-  return(adm?`<button class="btn sm out" onclick="S.sel=null;render()" style="margin-bottom:12px">← সব সদস্য</button>`:'')+body+'<div class="foot">তথ্য শুধু আপনি ও MD দেখতে পারেন • RIAS</div>'}
+  else body=tab==='dep'?phase+deposits:tab==='loan'?loan:dateLine()+hero+monthCard()+noticesCard()+dueCard('me')+stats+`<div class="card"><h2>💚 আপনার অগ্রগতি</h2><div class="ringwrap">${ring(pct,'#c9a84c','কর্জ শোধ')}<div style="font-size:13px;color:var(--mut);flex:1">${dis?`আপনি মোট ${bn(dis)} কর্জ নিয়েছেন, ${bn(rep)} পরিশোধ করেছেন।`:'আপনার কোনো কর্জ নেই। আলহামদুলিল্লাহ।'}</div></div></div>`+phase+verseCard();
+  return(adm?`<div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn sm out" onclick="S.sel=null;render()">← সব সদস্য</button><button class="btn sm gold" onclick="printDoc(stmt(S.sel))">📄 স্টেটমেন্ট PDF</button><button class="btn sm out" onclick="xlMember(S.sel)">📊 Excel</button></div>`:'')+body+'<div class="foot">তথ্য শুধু আপনি ও MD দেখতে পারেন • RIAS</div>'}
 
 /* admin */
 function adminHome(){
   const ap=D.m.filter(x=>x.is_approved);let T={c:0,d:0,r:0,o:0};ap.forEach(x=>{const l=LN(x.id);T.c+=sumC(x.id);T.d+=+l.total_disbursed||0;T.r+=+l.total_repaid||0;T.o+=+l.outstanding||0});
   const rec=T.d?Math.round(T.r/T.d*100):0,mx=Math.max(1,...ap.map(x=>sumC(x.id))),pend=D.m.length-ap.length;
-  return`<div class="hero"><div class="hi">MD ড্যাশবোর্ড</div><div class="nm">${esc(me.name)}</div><div class="l">সংগঠনের মোট জমা</div><div class="v">${bn(T.c)}</div><span class="pill">সক্রিয় সদস্য: ${ap.length} জন</span></div>
-  ${pend?`<div class="card" style="border-left:5px solid var(--gold);cursor:pointer" onclick="go('appr')"><b>⏳ ${pend} জন সদস্য অনুমোদনের অপেক্ষায়</b><div style="font-size:13px;color:var(--mut)">দেখতে চাপুন</div></div>`:''}
-  <div class="grid"><div class="kpi k2"><div class="l">মোট বিতরণ (কর্জ)</div><div class="v">${bn(T.d)}</div></div><div class="kpi k4"><div class="l">মোট পরিশোধ</div><div class="v">${bn(T.r)}</div></div></div>
+  return`${dateLine()}<div class="hero"><div class="hi">MD ড্যাশবোর্ড</div><div class="nm">${esc(me.name)}</div><div class="l">সংগঠনের মোট জমা</div><div class="v">${bn(T.c)}</div><span class="pill">সক্রিয় সদস্য: ${ap.length} জন</span></div>
+  ${monthSummary()}${pend?`<div class="card" style="border-left:5px solid var(--gold);cursor:pointer" onclick="go('appr')"><b>⏳ ${pend} জন সদস্য অনুমোদনের অপেক্ষায়</b><div style="font-size:13px;color:var(--mut)">দেখতে চাপুন</div></div>`:''}
+  ${dueCard('all')}<div class="grid"><div class="kpi k2"><div class="l">মোট বিতরণ (কর্জ)</div><div class="v">${bn(T.d)}</div></div><div class="kpi k4"><div class="l">মোট পরিশোধ</div><div class="v">${bn(T.r)}</div></div></div>
   <div class="card" style="margin-top:14px"><h2>🤝 কর্জে হাসানা আদায়</h2><div class="ringwrap">${ring(rec,'#1b7a3d','আদায়')}<div style="flex:1"><div class="stat gold"><div class="l">বকেয়া</div><div class="v neg">${bn(T.o)}</div></div><div class="stat" style="margin-top:8px"><div class="l">নিট (জমা − বকেয়া)</div><div class="v">${bn(T.c-T.o)}</div></div></div></div></div>
   <div class="card"><h2>👥 সদস্যভিত্তিক জমা</h2>${ap.map(x=>`<div class="hb"><span class="n">${esc(x.name.split(' ')[0])}</span><div class="bar"><i style="width:${sumC(x.id)/mx*100}%"></i></div><b>${bn(sumC(x.id))}</b></div>`).join('')}</div>
-  <div class="card"><h2>⚠️ কর্জ বকেয়া (সদস্যভিত্তিক)</h2>${ap.filter(x=>+LN(x.id).outstanding>0).map(x=>{const l=LN(x.id),p=Math.round(l.total_repaid/l.total_disbursed*100);return`<div class="hb"><span class="n">${esc(x.name.split(' ')[0])}</span><div class="bar"><i style="width:${p}%"></i></div><b>${bn(l.outstanding)}</b></div>`}).join('')||'<div class="empty">কোনো বকেয়া নেই</div>'}</div>`}
+  <div class="card"><h2>⚠️ কর্জ বকেয়া (সদস্যভিত্তিক)</h2>${ap.filter(x=>+LN(x.id).outstanding>0).map(x=>{const l=LN(x.id),p=Math.round(l.total_repaid/l.total_disbursed*100);return`<div class="hb"><span class="n">${esc(x.name.split(' ')[0])}</span><div class="bar"><i style="width:${p}%"></i></div><b>${bn(l.outstanding)}</b></div>`}).join('')||'<div class="empty">কোনো বকেয়া নেই</div>'}</div>${verseCard()}`}
 
 function adminList(){const ap=D.m.filter(x=>x.is_approved);
   return`<div class="card"><h2>👥 সকল সদস্য (${ap.length})</h2>${ap.map(x=>{const net=sumC(x.id)-(+LN(x.id).outstanding||0);return`<div class="mrow" onclick="S.sel=D.m.find(z=>z.id==='${x.id}');render();scrollTo(0,0)"><div class="row"><div class="av">${ini(x.name)}</div><div style="flex:1"><b>${esc(x.name)}</b> ${x.role==='admin'?'<span class="badge">MD</span>':''}<br><small style="color:var(--mut)">জমা ${bn(sumC(x.id))} • বকেয়া ${bn(LN(x.id).outstanding||0)}</small></div><b class="${net<0?'neg':'pos'}">${net<0?'−':''}${bn(Math.abs(net))}</b></div></div>`}).join('')}</div>`}
@@ -225,24 +252,188 @@ async function approve(id){const{error}=await sb.from('members').update({is_appr
 async function refresh(){await load();render()}
 
 function adminEdit(m,c,l){
-  return`<div class="card"><h2>🛠️ MD: জমা যোগ করুন</h2>
+  const self=m.id===me.id,isA=m.role==='admin';
+  return`<div class="card"><h2>📞 ফোন নম্বর</h2><input id="phn" type="tel" inputmode="tel" value="${esc(m.phone||'')}" placeholder="01XXXXXXXXX"><small style="color:var(--mut)">WhatsApp রিমাইন্ডার পাঠাতে লাগবে</small><button class="btn out" style="width:100%;margin-top:10px" onclick="savePhone('${m.id}')">সংরক্ষণ</button></div>
+  <div class="card"><h2>🛠️ MD: কর্জ যোগ করুন</h2>
+   <label>কারণ</label><input id="qP" placeholder="যেমন: ভর্তি ফি">
+   <div class="grid"><div><label>কর্জের তারিখ</label><input id="qD" type="date"></div><div><label>ফেরতের শেষ তারিখ</label><input id="qDue" type="date"></div></div>
+   <label>অঙ্ক (৳)</label><input id="qA" type="number" inputmode="numeric">
+   <label>এখনই কিছু পরিশোধ হয়ে থাকলে (৳)</label><input id="qPd" type="number" inputmode="numeric" value="0">
+   <button class="btn gold" style="width:100%;margin-top:12px" onclick="addQ('${m.id}')">কর্জ সংরক্ষণ</button></div>
+  <div class="card"><h2>🛠️ MD: জমা যোগ করুন</h2>
    <label>পর্যায়</label><select id="aPh">${[1,2,3,4].map(p=>`<option value="${p}" ${p===4?'selected':''}>${PH[p]}</option>`).join('')}</select>
    <div class="grid"><div><label>মাস</label><select id="aMo"><option value="">—</option>${MONTHS.map((x,i)=>i?`<option value="${i}">${x}</option>`:'').join('')}</select></div><div><label>বছর</label><input id="aYr" type="number" value="2026"></div></div>
    <label>পরিমাণ (৳)</label><input id="aAm" type="number" inputmode="numeric">
    <button class="btn" style="width:100%;margin-top:12px" onclick="addC('${m.id}')">জমা সংরক্ষণ</button>
-   ${c.length?`<label style="margin-top:16px">এন্ট্রি পরিবর্তন / মুছুন</label>${c.map(x=>`<div class="row" style="padding:6px 0;font-size:13px"><span>${esc(PH[x.phase]||x.phase)} ${x.month?MONTHS[x.month]:''} — ${bn(x.amount)}</span><span><button class="btn sm out" onclick="tog('${x.id}',${x.is_paid===false})">${x.is_paid===false?'জমা করুন':'বাকি করুন'}</button> <button class="btn sm red" onclick="delC('${x.id}')">✕</button></span></div>`).join('')}`:''}
+   ${c.length?`<label style="margin-top:16px">এন্ট্রি পরিবর্তন / মুছুন</label>${c.map(x=>`<div class="row" style="padding:6px 0;font-size:13px"><span>${esc(PH[x.phase]||x.phase)} ${x.month?MONTHS[x.month]:''} — ${bn(x.amount)}</span><span><button class="btn sm out" onclick="editC('${x.id}')">✎</button> <button class="btn sm out" onclick="tog('${x.id}',${x.is_paid===false})">${x.is_paid===false?'জমা করুন':'বাকি করুন'}</button> <button class="btn sm red" onclick="delC('${x.id}')">✕</button></span></div>`).join('')}`:''}
   </div>
-  <div class="card"><h2>🛠️ MD: কর্জে হাসানা আপডেট</h2>
-   <div class="grid"><div><label>মোট গ্রহণ</label><input id="lD" type="number" value="${l.total_disbursed||0}"></div><div><label>মোট পরিশোধ</label><input id="lR" type="number" value="${l.total_repaid||0}"></div></div>
-   <small style="color:var(--mut)">বকেয়া নিজে হিসাব হবে (গ্রহণ − পরিশোধ)</small>
-   <button class="btn gold" style="width:100%;margin-top:12px" onclick="saveL('${m.id}')">আপডেট করুন</button></div>`}
+  ${self?'':`<div class="card"><h2>👑 ভূমিকা</h2><div class="row"><span>বর্তমান: <b>${isA?'MD / Admin':'সাধারণ সদস্য'}</b></span><button class="btn sm ${isA?'red':''}" onclick="setRole('${m.id}','${isA?'member':'admin'}')">${isA?'Admin সরান':'Admin বানান'}</button></div></div>`}`}
 async function addC(id){const amount=Number($('aAm').value);if(!amount)return alert('পরিমাণ দিন');
   const{error}=await sb.from('contributions').insert({member_id:id,phase:Number($('aPh').value),month:$('aMo').value?Number($('aMo').value):null,year:Number($('aYr').value)||null,amount,is_paid:true});if(error)return alert(error.message);await refresh()}
 async function tog(cid,paid){const{error}=await sb.from('contributions').update({is_paid:paid}).eq('id',cid);if(error)return alert(error.message);await refresh()}
 async function delC(cid){if(!confirm('এই এন্ট্রি মুছবেন?'))return;const{error}=await sb.from('contributions').delete().eq('id',cid);if(error)return alert(error.message);await refresh()}
-async function saveL(id){const d=Number($('lD').value)||0,r=Number($('lR').value)||0;
-  const{error}=await sb.from('loans').upsert({member_id:id,total_disbursed:d,total_repaid:r,outstanding:d-r,updated_at:new Date().toISOString()},{onConflict:'member_id'});
-  if(error)return alert(error.message);await refresh()}
+async function addQ(id){const amount=Number($('qA').value),paid=Number($('qPd').value)||0;if(!amount)return alert('অঙ্ক দিন');if(paid>amount)return alert('পরিশোধ অঙ্কের বেশি হতে পারে না');
+  const{error}=await sb.from('qard_entries').insert({member_id:id,purpose:$('qP').value.trim()||'কর্জ',amount,paid,loan_date:$('qD').value||null,due_date:$('qDue').value||null});if(error)return alert(error.message);await refresh()}
+async function payQ(qid){const x=D.q.find(z=>z.id===qid),rem=x.amount-x.paid;const v=Number(prompt('কত টাকা কিস্তি পেয়েছেন? (বাকি: '+rem+')'));if(!v)return;if(v>rem)return alert('বাকির চেয়ে বেশি হতে পারে না');
+  const{error}=await sb.from('qard_entries').update({paid:Number(x.paid)+v}).eq('id',qid);if(error)return alert(error.message);await refresh()}
+async function editQ(qid){const x=D.q.find(z=>z.id===qid);const a=prompt('মোট অঙ্ক',x.amount);if(a===null)return;const p=prompt('মোট পরিশোধিত',x.paid);if(p===null)return;const dd=prompt('ফেরতের শেষ তারিখ (YYYY-MM-DD, খালি রাখলে বাদ)',x.due_date||'');if(dd===null)return;
+  if(Number(p)>Number(a))return alert('পরিশোধ অঙ্কের বেশি হতে পারে না');const{error}=await sb.from('qard_entries').update({amount:Number(a),paid:Number(p),due_date:dd.trim()||null}).eq('id',qid);if(error)return alert(error.message);await refresh()}
+async function delQ(qid){if(!confirm('এই কর্জ এন্ট্রি মুছবেন? (ইতিহাসে লেখা থাকবে)'))return;const{error}=await sb.from('qard_entries').delete().eq('id',qid);if(error)return alert(error.message);await refresh()}
+async function setRole(id,role){if(!confirm(role==='admin'?'এই সদস্যকে Admin (MD) বানাবেন? সে সবার তথ্য দেখতে ও বদলাতে পারবে।':'Admin সরিয়ে সাধারণ সদস্য করবেন?'))return;
+  const{error}=await sb.from('members').update({role}).eq('id',id);if(error)return alert(error.message);await refresh()}
+
+const TB={contributions:'জমা',qard_entries:'কর্জ',members:'সদস্য',external_loans:'বহিরাগত কর্জ',notices:'নোটিশ'},AC={INSERT:'যোগ করেছেন',UPDATE:'পরিবর্তন করেছেন',DELETE:'মুছেছেন'},SK=['id','created_at','updated_at','member_id','email'];
+function diff(a){if(a.action==='INSERT'){const n=a.new_data||{};return(n.purpose?esc(n.purpose)+' • ':'')+(n.amount!=null?bn(n.amount):'')}
+  if(a.action==='DELETE'){const o=a.old_data||{};return(o.purpose?esc(o.purpose)+' • ':'')+(o.amount!=null?bn(o.amount):'')}
+  const o=a.old_data||{},n=a.new_data||{};return Object.keys(n).filter(k=>!SK.includes(k)&&JSON.stringify(o[k])!==JSON.stringify(n[k])).map(k=>`${esc(k)}: ${esc(o[k])} → ${esc(n[k])}`).join(', ')}
+function auditPage(){return`<div class="card"><h2>📝 পরিবর্তনের ইতিহাস (সর্বশেষ ${D.a.length}টি)</h2>${D.a.map(a=>`<div class="mrow" style="cursor:default"><div style="font-size:13px"><b>${esc(a.actor_name||'?')}</b> ${TB[a.table_name]||''} ${AC[a.action]||''}${a.member_name?` — <b>${esc(a.member_name)}</b>`:''}<br><span style="color:var(--mut)">${diff(a)}</span><br><small style="color:var(--mut)">${new Date(a.created_at).toLocaleString('bn-BD')}</small></div></div>`).join('')||'<div class="empty">এখনো কোনো পরিবর্তন নেই</div>'}</div>`}
+
+
+/* ---- রিমাইন্ডার ---- */
+const days=d=>Math.round((new Date(d+'T00:00:00')-new Date(new Date().toDateString()))/864e5);
+function dueItems(scope){const o=[];
+  D.q.filter(x=>scope==='all'||x.member_id===me.id).forEach(x=>{const rem=x.amount-x.paid;if(rem>0&&x.due_date&&days(x.due_date)<=7)o.push({who:scope==='all'?((D.m.find(m=>m.id===x.member_id)||{}).name||''):'',what:x.purpose||'কর্জ',rem,d:days(x.due_date),due:x.due_date})});
+  if(scope==='all')D.x.forEach(x=>{const rem=x.amount-x.paid;if(rem>0&&x.due_date&&days(x.due_date)<=7)o.push({who:x.borrower_name+' (বহিরাগত)',what:x.purpose||'কর্জ',rem,d:days(x.due_date),due:x.due_date})});
+  return o.sort((a,b)=>a.d-b.d)}
+function dueCard(scope){const it=dueItems(scope);if(!it.length)return'';
+  return`<div class="card" style="border-left:5px solid var(--gold)"><h2>⏰ রিমাইন্ডার</h2>${it.map(i=>`<div class="row" style="padding:7px 0;font-size:14px;border-bottom:1px solid #f0f2f0"><span>${i.who?'<b>'+esc(i.who)+'</b> — ':''}${esc(i.what)}<br><small style="color:var(--mut)">শেষ তারিখ ${esc(i.due)}</small></span><span style="text-align:right"><b>${bn(i.rem)}</b><br><small class="${i.d<0?'neg':''}">${i.d<0?(-i.d)+' দিন মেয়াদোত্তীর্ণ':i.d===0?'আজই শেষ':i.d+' দিন বাকি'}</small></span></div>`).join('')}</div>`}
+
+/* ---- নোটিশ বোর্ড ---- */
+const KI={notice:'📢',meeting:'🗓️',fee:'💳',eid:'🌙',urgent:'🚨'},KN={notice:'নোটিশ',meeting:'মিটিং',fee:'ফি/জমা',eid:'উৎসব/দোয়া',urgent:'জরুরি'};
+const sortedN=()=>[...D.n].sort((a,b)=>(b.pinned-a.pinned)||(new Date(b.created_at)-new Date(a.created_at)));
+function ntHtml(x,adm){return`<div class="nt ${x.pinned?'pin':''}"><div class="row"><b>${KI[x.kind]||'📢'} ${esc(x.title)}</b>${x.pinned?'<span class="badge">📌</span>':''}</div>${x.body?`<p>${esc(x.body)}</p>`:''}<small style="color:var(--mut)">${new Date(x.created_at).toLocaleDateString('bn-BD')}</small>${adm?`<div style="display:flex;gap:6px;margin-top:6px"><button class="btn sm out" onclick="pinN('${x.id}',${!x.pinned})">${x.pinned?'আনপিন':'📌 পিন'}</button><button class="btn sm red" onclick="delN('${x.id}')">✕ মুছুন</button></div>`:''}</div>`}
+function noticesCard(){const n=sortedN().slice(0,5);if(!n.length)return'';return`<div class="card"><h2>📢 নোটিশ বোর্ড</h2>${n.map(x=>ntHtml(x,false)).join('')}</div>`}
+function noticePage(){return`<div class="card"><h2>📢 নতুন নোটিশ দিন</h2><label>শিরোনাম</label><input id="nT" placeholder="যেমন: শুক্রবার মিটিং">
+  <label>ধরন</label><select id="nK">${Object.keys(KN).map(k=>`<option value="${k}">${KI[k]} ${KN[k]}</option>`).join('')}</select>
+  <label>বিস্তারিত</label><textarea id="nB"></textarea>
+  <label style="display:flex;gap:8px;align-items:center"><input id="nPin" type="checkbox" style="width:auto"> 📌 উপরে পিন করে রাখুন</label>
+  <button class="btn" style="width:100%;margin-top:12px" onclick="addN()">প্রকাশ করুন</button></div>
+  <div class="card"><h2>প্রকাশিত নোটিশ (${D.n.length})</h2>${sortedN().map(x=>ntHtml(x,true)).join('')||'<div class="empty">কোনো নোটিশ নেই</div>'}</div>`}
+async function addN(){const t=$('nT').value.trim();if(!t)return alert('শিরোনাম দিন');const{error}=await sb.from('notices').insert({title:t,body:$('nB').value.trim()||null,kind:$('nK').value,pinned:$('nPin').checked});if(error)return alert(error.message);await refresh()}
+async function delN(id){if(!confirm('নোটিশটি মুছবেন?'))return;const{error}=await sb.from('notices').delete().eq('id',id);if(error)return alert(error.message);await refresh()}
+async function pinN(id,v){const{error}=await sb.from('notices').update({pinned:v}).eq('id',id);if(error)return alert(error.message);await refresh()}
+
+/* ---- বহিরাগত কর্জ ---- */
+function extPage(){const T=D.x.reduce((t,x)=>({a:t.a+ +x.amount,p:t.p+ +x.paid}),{a:0,p:0});
+  const cards=D.x.map(x=>{const am=+x.amount,pd=+x.paid,rm=am-pd,pc=am?Math.round(pd/am*100):0,od=rm>0&&x.due_date&&days(x.due_date)<0,st=pd>=am?['পরিশোধিত','']:od?['মেয়াদোত্তীর্ণ','w']:pd>0?['আংশিক','w']:['বাকি','w'];
+   return`<div style="border:1px solid #e3e9e5;border-radius:14px;padding:12px;margin-top:10px"><div class="row"><b>${esc(x.borrower_name)}</b><span class="badge ${st[1]}">${st[0]}</span></div>
+   <small style="color:var(--mut)">${esc(x.purpose||'')}${x.phone?' • 📞 '+esc(x.phone):''}${x.reference?' • রেফারেন্স: '+esc(x.reference):''}<br>${esc(x.loan_date||'')}${x.due_date?' → শেষ তারিখ '+esc(x.due_date):''}</small>
+   <div class="grid3" style="margin-top:8px"><div><small style="color:var(--mut)">গ্রহণ</small><br><b>${bn(am)}</b></div><div><small style="color:var(--mut)">পরিশোধ</small><br><b>${bn(pd)}</b></div><div><small style="color:var(--mut)">বাকি</small><br><b class="${rm>0?'neg':'pos'}">${bn(rm)}</b></div></div>
+   <div class="bar"><i style="width:${pc}%"></i></div><div style="display:flex;gap:6px;margin-top:6px"><button class="btn sm" onclick="payX('${x.id}')">+ কিস্তি</button><button class="btn sm out" onclick="editX('${x.id}')">✎ সংশোধন</button><button class="btn sm red" onclick="delX('${x.id}')">✕</button></div></div>`}).join('');
+  return`<div class="hero"><div class="hi">বহিরাগত ঋণগ্রহীতা</div><div class="l">মোট বকেয়া</div><div class="v">${bn(T.a-T.p)}</div><span class="pill">${D.x.length} জন • বিতরণ ${bn(T.a)} • আদায় ${bn(T.p)}</span></div>
+  <div class="card"><h2>➕ নতুন বহিরাগত কর্জ</h2><label>ঋণগ্রহীতার নাম</label><input id="xN"><div class="grid"><div><label>ফোন</label><input id="xPh" type="tel" inputmode="tel"></div><div><label>রেফারেন্স / জামিনদার</label><input id="xRef"></div></div>
+   <label>কারণ</label><input id="xP"><div class="grid"><div><label>কর্জের তারিখ</label><input id="xD" type="date"></div><div><label>ফেরতের শেষ তারিখ</label><input id="xDue" type="date"></div></div>
+   <div class="grid"><div><label>অঙ্ক (৳)</label><input id="xA" type="number" inputmode="numeric"></div><div><label>ইতিমধ্যে পরিশোধ (৳)</label><input id="xPd" type="number" inputmode="numeric" value="0"></div></div>
+   <button class="btn gold" style="width:100%;margin-top:12px" onclick="addX()">সংরক্ষণ</button></div>
+  <div class="card"><h2>🤝 তালিকা</h2>${cards||'<div class="empty">এখনো কেউ নেই</div>'}</div><div class="foot">এই তথ্য শুধু Admin দেখতে পারে</div>`}
+async function addX(){const amount=Number($('xA').value),paid=Number($('xPd').value)||0,n=$('xN').value.trim();if(!n||!amount)return alert('নাম ও অঙ্ক দিন');if(paid>amount)return alert('পরিশোধ অঙ্কের বেশি হতে পারে না');
+  const{error}=await sb.from('external_loans').insert({borrower_name:n,phone:$('xPh').value.trim()||null,reference:$('xRef').value.trim()||null,purpose:$('xP').value.trim()||null,amount,paid,loan_date:$('xD').value||null,due_date:$('xDue').value||null});if(error)return alert(error.message);await refresh()}
+async function payX(id){const x=D.x.find(z=>z.id===id),rem=x.amount-x.paid;const v=Number(prompt('কত টাকা কিস্তি পেয়েছেন? (বাকি: '+rem+')'));if(!v)return;if(v>rem)return alert('বাকির চেয়ে বেশি হতে পারে না');
+  const{error}=await sb.from('external_loans').update({paid:Number(x.paid)+v}).eq('id',id);if(error)return alert(error.message);await refresh()}
+async function editX(id){const x=D.x.find(z=>z.id===id);const nm=prompt('ঋণগ্রহীতার নাম',x.borrower_name);if(nm===null||!nm.trim())return;const a=prompt('মোট অঙ্ক',x.amount);if(a===null)return;const p=prompt('মোট পরিশোধিত',x.paid);if(p===null)return;const dd=prompt('ফেরতের শেষ তারিখ (YYYY-MM-DD)',x.due_date||'');if(dd===null)return;
+  if(Number(p)>Number(a))return alert('পরিশোধ অঙ্কের বেশি হতে পারে না');const{error}=await sb.from('external_loans').update({borrower_name:nm.trim(),amount:Number(a),paid:Number(p),due_date:dd.trim()||null}).eq('id',id);if(error)return alert(error.message);await refresh()}
+async function delX(id){if(!confirm('এই এন্ট্রি মুছবেন? (ইতিহাসে লেখা থাকবে)'))return;const{error}=await sb.from('external_loans').delete().eq('id',id);if(error)return alert(error.message);await refresh()}
+
+/* ---- আরও ---- */
+function morePage(){const pend=D.m.filter(x=>!x.is_approved).length;
+  return`<div class="card"><h2>☰ আরও</h2>
+  <button class="btn out" style="width:100%;margin-bottom:10px;text-align:left" onclick="go('appr')">✅ নতুন সদস্য অনুমোদন ${pend?`<span class="badge w">${pend}</span>`:''}</button>
+  <button class="btn out" style="width:100%;margin-bottom:10px;text-align:left" onclick="go('log')">📝 পরিবর্তনের ইতিহাস</button>
+  <button class="btn out" style="width:100%;text-align:left" onclick="go('prof')">👤 প্রোফাইল ও পাসওয়ার্ড</button></div>
+  ${settingsCard()}<div class="card"><h2>📑 পূর্ণ অডিট রিপোর্ট</h2><div class="grid"><button class="btn" onclick="printDoc(auditDoc())">📄 PDF</button><button class="btn gold" onclick="xlAll()">📊 Excel</button></div><small style="color:var(--mut)">PDF-এর জন্য খোলা পাতায় "Save as PDF" বেছে নিন।</small></div>`}
+
+/* ---- PDF / Excel ---- */
+function printDoc(h){$('pr').innerHTML=h;setTimeout(()=>window.print(),200)}
+const bnd=()=>new Date().toLocaleDateString('bn-BD');
+function prHead(t){return`<div style="font-family:'Hind Siliguri',sans-serif;color:#111"><div style="display:flex;align-items:center;gap:12px;border-bottom:3px solid #1a4d2e;padding-bottom:10px"><img src="logo.png" style="width:60px"><div><div style="font-size:20px;font-weight:700;color:#1a4d2e">রাবিতা ইত্তিহাদ আশ-শুব্বান (RIAS)</div><div style="font-size:12px;color:#9b7d2a">ঐক্য • দায়িত্বশীলতা • ইসলামি মূল্যবোধ</div></div></div><h2 style="color:#1a4d2e;margin:14px 0 4px">${t}</h2><div style="font-size:12px;color:#555;margin-bottom:10px">তারিখ: ${bnd()}</div>`}
+const prFoot=()=>`<div style="display:flex;justify-content:space-between;margin-top:50px;font-size:12px"><div style="border-top:1px solid #333;padding-top:4px;width:40%;text-align:center">অর্থ সম্পাদক</div><div style="border-top:1px solid #333;padding-top:4px;width:40%;text-align:center">ম্যানেজিং ডিরেক্টর</div></div><div style="font-size:10px;color:#777;margin-top:14px">এটি RIAS Member Portal থেকে তৈরি কম্পিউটার-জেনারেটেড প্রতিবেদন।</div></div>`;
+function stmt(m){const c=D.c.filter(x=>x.member_id===m.id&&x.is_paid!==false),q=D.q.filter(x=>x.member_id===m.id),tot=sumC(m.id),l=LN(m.id),net=tot-l.outstanding;
+  return prHead('সদস্য আর্থিক স্টেটমেন্ট')+`<div style="font-size:14px"><b>নাম:</b> ${esc(m.name)} &nbsp;&nbsp; <b>ইমেইল:</b> ${esc(m.email)}</div>
+  <h3 style="margin:16px 0 4px">জমার বিবরণ</h3><table><tr><th>বিবরণ</th><th class="r">পরিমাণ</th></tr>${c.map(x=>`<tr><td>${esc(PH[x.phase]||'পর্যায় '+x.phase)}${x.month?' — '+MONTHS[x.month]+' '+(x.year||''):''}</td><td class="r">${bn(x.amount)}</td></tr>`).join('')||'<tr><td colspan="2">কোনো জমা নেই</td></tr>'}<tr><td><b>মোট জমা</b></td><td class="r"><b>${bn(tot)}</b></td></tr></table>
+  <h3 style="margin:16px 0 4px">কর্জে হাসানা</h3><table><tr><th>কারণ</th><th>তারিখ</th><th class="r">গ্রহণ</th><th class="r">পরিশোধ</th><th class="r">বাকি</th></tr>${q.map(x=>`<tr><td>${esc(x.purpose||'কর্জ')}</td><td>${esc(x.loan_date||'')}</td><td class="r">${bn(x.amount)}</td><td class="r">${bn(x.paid)}</td><td class="r">${bn(x.amount-x.paid)}</td></tr>`).join('')||'<tr><td colspan="5">কোনো কর্জ নেই</td></tr>'}<tr><td colspan="2"><b>মোট</b></td><td class="r"><b>${bn(l.total_disbursed)}</b></td><td class="r"><b>${bn(l.total_repaid)}</b></td><td class="r"><b>${bn(l.outstanding)}</b></td></tr></table>
+  <table><tr><th>নিট আর্থিক অবস্থান (মোট জমা − বকেয়া কর্জ)</th><th class="r">${net<0?'−':''}${bn(Math.abs(net))}</th></tr></table>`+prFoot()}
+function auditDoc(){const ap=D.m.filter(x=>x.is_approved);let T={c:0,d:0,r:0,o:0};
+  const rows=ap.map(x=>{const l=LN(x.id),c=sumC(x.id),n=c-l.outstanding;T.c+=c;T.d+=l.total_disbursed;T.r+=l.total_repaid;T.o+=l.outstanding;return`<tr><td>${esc(x.name)}</td><td class="r">${bn(c)}</td><td class="r">${bn(l.total_disbursed)}</td><td class="r">${bn(l.total_repaid)}</td><td class="r">${bn(l.outstanding)}</td><td class="r">${n<0?'−':''}${bn(Math.abs(n))}</td></tr>`}).join('');
+  const X=D.x.reduce((t,x)=>({a:t.a+ +x.amount,p:t.p+ +x.paid}),{a:0,p:0});
+  return prHead('অডিট রিপোর্ট — সদস্য আর্থিক অবস্থান')+`<table><tr><th>সদস্য</th><th class="r">মোট জমা</th><th class="r">কর্জ গ্রহণ</th><th class="r">পরিশোধ</th><th class="r">বকেয়া</th><th class="r">নিট অবস্থান</th></tr>${rows}<tr><td><b>মোট</b></td><td class="r"><b>${bn(T.c)}</b></td><td class="r"><b>${bn(T.d)}</b></td><td class="r"><b>${bn(T.r)}</b></td><td class="r"><b>${bn(T.o)}</b></td><td class="r"><b>${bn(T.c-T.o)}</b></td></tr></table>
+  <div style="font-size:12px">কর্জ আদায়ের হার: ${T.d?Math.round(T.r/T.d*100):0}%</div>
+  ${D.x.length?`<h3 style="margin:16px 0 4px">বহিরাগত কর্জ</h3><table><tr><th>নাম</th><th>কারণ</th><th class="r">গ্রহণ</th><th class="r">পরিশোধ</th><th class="r">বাকি</th></tr>${D.x.map(x=>`<tr><td>${esc(x.borrower_name)}</td><td>${esc(x.purpose||'')}</td><td class="r">${bn(x.amount)}</td><td class="r">${bn(x.paid)}</td><td class="r">${bn(x.amount-x.paid)}</td></tr>`).join('')}<tr><td colspan="2"><b>মোট</b></td><td class="r"><b>${bn(X.a)}</b></td><td class="r"><b>${bn(X.p)}</b></td><td class="r"><b>${bn(X.a-X.p)}</b></td></tr></table>`:''}`+prFoot()}
+function xlSave(wb,name){if(typeof XLSX==='undefined')return alert('Excel লাইব্রেরি লোড হয়নি। ইন্টারনেট চেক করে আবার চেষ্টা করুন।');XLSX.writeFile(wb,name)}
+const cRows=id=>D.c.filter(x=>x.member_id===id).map(x=>({সদস্য:(D.m.find(m=>m.id===x.member_id)||{}).name,পর্যায়:x.phase,মাস:x.month?MONTHS[x.month]:'',বছর:x.year||'',অঙ্ক:Number(x.amount),অবস্থা:x.is_paid===false?'বাকি':'জমা'}));
+const qRows=id=>D.q.filter(x=>x.member_id===id).map(x=>({সদস্য:(D.m.find(m=>m.id===x.member_id)||{}).name,কারণ:x.purpose||'',তারিখ:x.loan_date||'',শেষ_তারিখ:x.due_date||'',গ্রহণ:Number(x.amount),পরিশোধ:Number(x.paid),বাকি:x.amount-x.paid}));
+function xlMember(m){if(typeof XLSX==='undefined')return xlSave();const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(cRows(m.id)),'জমা');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(qRows(m.id)),'কর্জ');xlSave(wb,'RIAS_'+m.name.replace(/\s+/g,'_')+'.xlsx')}
+function xlAll(){if(typeof XLSX==='undefined')return xlSave();const ap=D.m.filter(x=>x.is_approved),wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(ap.map(x=>{const l=LN(x.id),c=sumC(x.id);return{সদস্য:x.name,মোট_জমা:c,কর্জ_গ্রহণ:l.total_disbursed,পরিশোধ:l.total_repaid,বকেয়া:l.outstanding,নিট:c-l.outstanding}})),'সারসংক্ষেপ');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(ap.flatMap(x=>cRows(x.id))),'জমা');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(ap.flatMap(x=>qRows(x.id))),'কর্জ');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(D.x.map(x=>({নাম:x.borrower_name,ফোন:x.phone||'',কারণ:x.purpose||'',তারিখ:x.loan_date||'',শেষ_তারিখ:x.due_date||'',গ্রহণ:Number(x.amount),পরিশোধ:Number(x.paid),বাকি:x.amount-x.paid}))),'বহিরাগত');
+  xlSave(wb,'RIAS_Audit_'+new Date().toISOString().slice(0,10)+'.xlsx')}
+
+
+/* ---- মাসিক জমা ---- */
+const START={y:2026,m:7},SMON=['','জানু','ফেব্রু','মার্চ','এপ্রি','মে','জুন','জুলাই','আগস্ট','সেপ্টে','অক্টো','নভে','ডিসে'];
+const amt=()=>Number((D.s||{}).monthly_amount)||500,dl=()=>Number((D.s||{}).deadline_day)||15;
+const phaseOf=(y,m)=>(y-2025)*2+(m<=6?1:2);
+const nowYM=()=>{const d=new Date();return{y:d.getFullYear(),m:d.getMonth()+1,d:d.getDate()}};
+const ymv=(y,m)=>y*12+m;
+const cons=()=>D.m.filter(x=>x.is_approved&&(x.role==='member'||x.role==='admin'));
+const mrow=(id,y,m)=>D.c.find(x=>x.member_id===id&&x.month===m&&x.year===y&&x.is_paid!==false);
+const pLabel=p=>PH[p]||`পর্যায় ${p} (${p%2?'জানুয়ারি–জুন':'জুলাই–ডিসেম্বর'} ${2025+Math.floor((p-1)/2)})`;
+function pMonths(p){const y=2025+Math.floor((p-1)/2),h=(p-1)%2;return Array.from({length:6},(_,i)=>({y,m:(h?7:1)+i}))}
+function cell(id,y,m){const n=nowYM();if(ymv(y,m)<ymv(START.y,START.m))return'na';if(mrow(id,y,m))return'paid';const c=ymv(y,m),t=ymv(n.y,n.m);if(c>t)return'future';if(c<t)return'late';return n.d>dl()?'late':'due'}
+function dueMonths(id){const n=nowYM(),o=[];for(let v=ymv(START.y,START.m);v<=ymv(n.y,n.m);v++){const y=Math.floor((v-1)/12),m=v-y*12;if(!mrow(id,y,m))o.push({y,m})}return o}
+const SYM={paid:'✓',late:'!',due:'•',future:'–',na:'–'};
+function monthCard(){const n=nowYM(),st=cell(me.id,n.y,n.m);if(st==='na')return'';const due=dueMonths(me.id);
+  const M={paid:['✅','আলহামদুলিল্লাহ, এই মাসের জমা হয়ে গেছে','ok'],due:['⏳',`এই মাসের জমা ${bn(amt())} — ${bn(dl())} তারিখের মধ্যে`,'due'],late:['⚠️',`এই মাসের জমা ${bn(amt())} এখনো বাকি (শেষ তারিখ ${bn(dl())})`,'late'],future:['⏳','','due']}[st];
+  return`<div class="card"><h2>📅 মাসিক জমা</h2><div class="mst ${M[2]}"><span>${M[0]}</span><div>${M[1]}</div></div>
+  <div class="strip">${pMonths(phaseOf(n.y,n.m)).map(x=>{const s=cell(me.id,x.y,x.m);return`<div class="mo"><i class="${s}">${SYM[s]}</i>${SMON[x.m]}</div>`}).join('')}</div>
+  ${due.length?`<div class="msg e" style="margin-top:12px">বকেয়া জমা: ${due.length} মাস (${due.map(x=>SMON[x.m]).join(', ')}) • ${bn(due.length*amt())}</div>`:''}</div>`}
+function monthSummary(){const n=nowYM(),cs=cons(),paid=cs.filter(x=>mrow(x.id,n.y,n.m)).length,pc=cs.length?Math.round(paid/cs.length*100):0,dt=cs.reduce((t,x)=>t+dueMonths(x.id).length,0);
+  return`<div class="card" onclick="go('mon')" style="cursor:pointer"><h2>📅 ${MONTHS[n.m]} মাসের জমা</h2><div class="row"><b>${paid}/${cs.length} জন জমা দিয়েছেন</b><span class="badge">${pc}%</span></div><div class="bar"><i style="width:${pc}%"></i></div>${dt?`<small style="color:var(--mut)">মোট বকেয়া ${dt}টি মাস • ${bn(dt*amt())} — বিস্তারিত দেখতে চাপুন</small>`:'<small style="color:var(--mut)">সব জমা ঠিক আছে 🌿</small>'}</div>`}
+function monthPage(){const n=nowYM();if(!S.mp)S.mp=Math.max(4,phaseOf(n.y,n.m));const p=S.mp,pm=pMonths(p),cs=cons();
+  const rows=cs.map(x=>`<tr><td>${esc(x.name.split(' ')[0])}</td>${pm.map(c=>{const s=cell(x.id,c.y,c.m);return`<td class="c"><button class="gc ${s}" ${s==='na'?'disabled':''} onclick="tgl('${x.id}',${c.y},${c.m})">${SYM[s]}</button></td>`}).join('')}</tr>`).join('');
+  const tot=pm.map(c=>`<td class="c"><b>${cs.filter(x=>mrow(x.id,c.y,c.m)).length}/${cs.length}</b></td>`).join('');
+  const dues=cs.filter(x=>dueMonths(x.id).length);
+  return`<div class="card"><div class="row"><button class="btn sm out" onclick="S.mp=Math.max(4,S.mp-1);render()" ${p<=4?'disabled':''}>‹</button><b style="text-align:center;font-size:14px">${pLabel(p)}</b><button class="btn sm out" onclick="S.mp++;render()">›</button></div>
+  <div style="overflow-x:auto;margin-top:10px"><table class="gt"><tr><th>সদস্য</th>${pm.map(c=>`<th class="c">${SMON[c.m]}</th>`).join('')}</tr>${rows}<tr class="tot"><td>জমা</td>${tot}</tr></table></div>
+  <small style="color:var(--mut)">ঘরে চাপলে জমা হবে, জমা হওয়া ঘরে চাপলে বাতিল। মাসিক অঙ্ক ${bn(amt())}</small>
+  <button class="btn gold" style="width:100%;margin-top:12px" onclick="bulk()">${MONTHS[n.m]} মাসের সবার ${bn(amt())} জমা</button></div>
+  <div class="card"><h2>⏰ বাকি জমা (${dues.length} জন)</h2>${dues.map(x=>{const dm=dueMonths(x.id),l=wa(x);return`<div class="row" style="padding:8px 0;border-bottom:1px solid #edf0ee"><div><b>${esc(x.name)}</b><br><small style="color:var(--mut)">${dm.map(d=>SMON[d.m]).join(', ')} • ${bn(dm.length*amt())}</small></div>${l?`<a class="btn sm" href="${l}" target="_blank" rel="noopener">💬 WhatsApp</a>`:'<span class="badge w">ফোন নেই</span>'}</div>`}).join('')||'<div class="empty">কারো জমা বাকি নেই 🌿</div>'}
+  ${dues.length?`<button class="btn out" style="width:100%;margin-top:12px" onclick="copyGroup()">📋 গ্রুপের জন্য মেসেজ কপি</button>`:''}</div>`}
+async function tgl(id,y,m){const st=cell(id,y,m);if(st==='na')return;let r;
+  if(st==='paid'){if(!confirm('এই জমা বাতিল করবেন?'))return;r=await sb.from('contributions').delete().eq('member_id',id).eq('year',y).eq('month',m)}
+  else r=await sb.from('contributions').insert({member_id:id,phase:phaseOf(y,m),month:m,year:y,amount:amt(),is_paid:true});
+  if(r.error)return alert(r.error.message);await refresh()}
+async function bulk(){const n=nowYM(),need=cons().filter(x=>!mrow(x.id,n.y,n.m));if(!need.length)return alert('সবার জমা আগেই রেকর্ড আছে');
+  if(!confirm(`${MONTHS[n.m]} মাসের জন্য ${need.length} জনের ${bn(amt())} করে জমা রেকর্ড করবেন?`))return;
+  const{error}=await sb.from('contributions').insert(need.map(x=>({member_id:x.id,phase:phaseOf(n.y,n.m),month:n.m,year:n.y,amount:amt(),is_paid:true})));if(error)return alert(error.message);await refresh()}
+async function editC(cid){const x=D.c.find(z=>z.id===cid);const a=prompt('নতুন অঙ্ক (৳)',x.amount);if(a===null||!Number(a))return;const{error}=await sb.from('contributions').update({amount:Number(a)}).eq('id',cid);if(error)return alert(error.message);await refresh()}
+function wa(m){const d=(m.phone||'').replace(/\D/g,'');if(!d)return'';const n=d.startsWith('88')?d:d.startsWith('0')?'88'+d:'880'+d;const dm=dueMonths(m.id);
+  const t=`আসসালামু আলাইকুম ${m.name},\nRIAS-এর মাসিক জমা (${dm.map(x=>MONTHS[x.m]).join(', ')}) বাবদ মোট ${bn(dm.length*amt())} এখনো বাকি আছে। অনুগ্রহ করে ${bn(dl())} তারিখের মধ্যে জমা দিয়ে দিন। জাযাকাল্লাহু খাইরান।\n— RIAS`;
+  return'https://wa.me/'+n+'?text='+encodeURIComponent(t)}
+async function copyGroup(){const n=nowYM(),L=cons().filter(x=>dueMonths(x.id).length).map(x=>{const dm=dueMonths(x.id);return`• ${x.name} — ${dm.map(d=>SMON[d.m]).join(', ')} (${bn(dm.length*amt())})`});
+  const t=`📢 RIAS — মাসিক জমা রিমাইন্ডার\nআসসালামু আলাইকুম। নিচের সদস্যদের মাসিক জমা (${bn(amt())}) এখনো বাকি। অনুগ্রহ করে প্রতি মাসের ${bn(dl())} তারিখের মধ্যে জমা দিন।\n\n${L.join('\n')}\n\nজাযাকাল্লাহু খাইরান।`;
+  try{await navigator.clipboard.writeText(t);alert('মেসেজ কপি হয়েছে। এবার WhatsApp গ্রুপে paste করুন।')}catch(e){prompt('কপি করুন:',t)}}
+async function savePhone(id){const{error}=await sb.from('members').update({phone:$('phn').value.trim()||null}).eq('id',id);if(error)return alert(error.message);await refresh()}
+function settingsCard(){return`<div class="card"><h2>⚙️ মাসিক জমার নিয়ম</h2><div class="grid"><div><label>মাসিক অঙ্ক (৳)</label><input id="sA" type="number" value="${amt()}"></div><div><label>শেষ তারিখ (প্রতি মাসের)</label><input id="sD" type="number" min="1" max="28" value="${dl()}"></div></div><small style="color:var(--mut)">বদলালে শুধু নতুন জমায় প্রযোজ্য হবে, আগের জমার অঙ্ক বদলাবে না।</small><button class="btn" style="width:100%;margin-top:10px" onclick="saveSet()">সংরক্ষণ</button></div>`}
+async function saveSet(){const{error}=await sb.from('settings').upsert([{key:'monthly_amount',value:String(Number($('sA').value)||500)},{key:'deadline_day',value:String(Math.min(28,Math.max(1,Number($('sD').value)||15)))}],{onConflict:'key'});if(error)return alert(error.message);await refresh()}
+
+/* ---- আয়াত / হাদিস ---- */
+const V=[
+{t:'আল-কুরআন • ঐক্য ও ভ্রাতৃত্ব',ar:'إِنَّمَا ٱلْمُؤْمِنُونَ إِخْوَةٌ فَأَصْلِحُوا۟ بَيْنَ أَخَوَيْكُمْ ۚ وَٱتَّقُوا۟ ٱللَّهَ لَعَلَّكُمْ تُرْحَمُونَ',bn:'মুমিনরা তো পরস্পর ভাই ভাই। কাজেই তোমরা তোমাদের ভাইদের মধ্যে আপস-মীমাংসা করে দাও এবং আল্লাহকে ভয় করো, যাতে তোমরা অনুগ্রহপ্রাপ্ত হও।',src:'সূরা হুজুরাত: ১০'},
+{t:'আল-কুরআন • একতাবদ্ধ থাকা',ar:'وَٱعْتَصِمُوا۟ بِحَبْلِ ٱللَّهِ جَمِيعًا وَلَا تَفَرَّقُوا۟',bn:'তোমরা সকলে মিলে আল্লাহর রজ্জুকে দৃঢ়ভাবে আঁকড়ে ধরো এবং পরস্পর বিচ্ছিন্ন হয়ো না।',src:'সূরা আলে ইমরান: ১০৩'},
+{t:'আল-কুরআন • সৎকাজে সহযোগিতা',ar:'وَتَعَاوَنُوا۟ عَلَى ٱلْبِرِّ وَٱلتَّقْوَىٰ ۖ وَلَا تَعَاوَنُوا۟ عَلَى ٱلْإِثْمِ وَٱلْعُدْوَٰنِ',bn:'সৎকর্ম ও খোদাভীতিতে একে অন্যের সাহায্য করো। পাপ ও সীমালঙ্ঘনের ব্যাপারে একে অন্যের সহায়তা করো না।',src:'সূরা আল-মায়িদাহ: ২'},
+{t:'আল-কুরআন • সময়ের গুরুত্ব',ar:'وَٱلْعَصْرِ. إِنَّ ٱلْإِنسَٰنَ لَفِى خُسْرٍ. إِلَّا ٱلَّذِينَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّٰلِحَٰتِ وَتَوَاصَوْا۟ بِٱلْحَقِّ وَتَوَاصَوْا۟ بِٱلصَّبْرِ',bn:'সময়ের শপথ! নিশ্চয়ই মানুষ ক্ষতির মধ্যে নিমজ্জিত। তবে তারা ছাড়া, যারা ঈমান এনেছে, সৎকাজ করেছে, পরস্পরকে সত্যের উপদেশ দিয়েছে এবং ধৈর্য ধারণের উপদেশ দিয়েছে।',src:'সূরা আসর: ১–৩'},
+{t:'আল-হাদিস • পারস্পরিক সহমর্মিতা',ar:'مَثَلُ الْمُؤْمِنِينَ فِي تَوَادِّهِمْ وَتَرَاحُمِهِمْ وَتَعَاطُفِهِمْ مَثَلُ الْجَسَدِ إِذَا اشْتَكَى مِنْهُ عُضْوٌ تَدَاعَى لَهُ سَائِرُ الْجَسَدِ بِالسَّهَرِ وَالْحُمَّى',bn:'পারস্পরিক ভালোবাসা, দয়া ও সহানুভূতির ক্ষেত্রে মুমিনদের দৃষ্টান্ত একটি দেহের মতো। যখন শরীরের কোনো একটি অঙ্গ অসুস্থ হয়, তখন পুরো শরীরই জ্বর ও অনিদ্রায় ভোগে।',src:'সহিহ মুসলিম: ২৫৮৬'},
+{t:'আল-হাদিস • সংগঠন ও কাঠামো',ar:'الْمُؤْمِنُ لِلْمُؤْمِنِ كَالْبُنْيَانِ يَشُدُّ بَعْضُهُ بَعْضًا',bn:'একজন মুমিন অপর মুমিনের জন্য একটি ইমারতের মতো, যার এক অংশ অপর অংশকে শক্তিশালী করে।',src:'সহিহ বুখারি: ৬০২৬'},
+{t:'আল-হাদিস • ভাইয়ের জন্য ভালোবাসা',ar:'لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ',bn:'তোমাদের কেউ ততক্ষণ পর্যন্ত প্রকৃত মুমিন হতে পারবে না, যতক্ষণ না সে তার ভাইয়ের জন্য তা-ই পছন্দ করবে, যা সে নিজের জন্য পছন্দ করে।',src:'সহিহ বুখারি: ১৩'},
+{t:'ইবনুল কাইয়্যিম (রহ.) • সময়ের মূল্য',ar:'إضاعة الوقت أشد من الموت، لأن إضاعة الوقت تقطعك عن الله والدار الآخرة، والموت يقطعك عن الدنيا وأهلها',bn:'সময়ের অপচয় মৃত্যুর চেয়েও ভয়াবহ। কারণ মৃত্যু তোমাকে দুনিয়া ও দুনিয়ার মানুষ থেকে বিচ্ছিন্ন করে, আর সময়ের অপচয় তোমাকে আল্লাহ ও পরকাল থেকে বিচ্ছিন্ন করে।',src:'আল-ফাওয়াইদ'},
+{t:'ইবনুল কাইয়্যিম (রহ.) • ইখলাস',ar:'العمل بغير إخلاص ولا اقتداء كالمسافر يملأ جرابه رملاً يثقله ولا ينفعه',bn:'ইখলাস ছাড়া আমল করা ওই পথিকের মতো, যে তার থলিতে বালি ভরে সফর করে। এটি তার বোঝা ভারী করে ঠিকই, কিন্তু কোনো উপকারে আসে না।',src:'আল-ফাওয়াইদ'}];
+function verseCard(){const d=Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/864e5),i=(((S.vi??d)%V.length)+V.length)%V.length,v=V[i];
+  return`<div class="card verse"><div class="vt">${v.t}</div><div class="ar" dir="rtl" lang="ar">${v.ar}</div><div class="bn">${v.bn}</div><div class="src">— ${v.src}</div><button class="btn sm out" onclick="S.vi=${(i+1)%V.length};render()">পরেরটা ›</button></div>`}
+function dateLine(){let g='',h='';try{g=new Date().toLocaleDateString('bn-BD',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}catch(e){}
+  try{h=new Intl.DateTimeFormat('bn-BD-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}).format(new Date())}catch(e){}
+  return`<div style="text-align:center;font-size:12px;color:var(--mut);margin:-2px 0 12px">${g}${h?'<br>'+h+' (আনুমানিক)':''}</div>`}
 
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 setMode('login');
