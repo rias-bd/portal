@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1a4d2e">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>RIAS Member Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{--g:#1a4d2e;--gd:#0f2d19;--gold:#c9a84c;--cream:#f4f3ec;--lg:#e8f0eb;--lgold:#fdf8ee;--red:#b3261e;--ok:#1b7a3d;--tx:#1d2b22;--mut:#6b776f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:'Hind Siliguri',system-ui,sans-serif;background:var(--cream);color:var(--tx);min-height:100vh}
+.hide{display:none!important}
+header{background:linear-gradient(135deg,var(--gd),var(--g));color:#fff;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;display:flex;align-items:center;gap:10px;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:5}
+header img{width:38px;height:38px;background:#fff;border-radius:10px;padding:2px}
+header h1{font-size:15px;margin:0;line-height:1.2}header small{opacity:.8;font-size:11px}header .sp{flex:1}
+.btn{border:0;border-radius:12px;padding:12px 16px;font:600 15px inherit;font-family:inherit;background:var(--g);color:#fff;cursor:pointer}
+.btn.gold{background:var(--gold);color:var(--gd)}.btn.out{background:transparent;border:1.5px solid var(--g);color:var(--g)}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:9px}.btn.ghost{background:rgba(255,255,255,.15);color:#fff}.btn.red{background:var(--red)}.btn:disabled{opacity:.6}
+main{max-width:680px;margin:0 auto;padding:16px 16px 100px}
+.card{background:#fff;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(15,45,25,.07)}
+.card h2{margin:0 0 12px;font-size:15px;color:var(--g);display:flex;align-items:center;gap:6px}
+.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border-radius:22px;padding:22px 20px;margin-bottom:14px;border-bottom:4px solid var(--gold)}
+.hero:after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:rgba(201,168,76,.18)}
+.hero .hi{font-size:13px;opacity:.85}.hero .nm{font-size:19px;font-weight:700;margin-bottom:10px}
+.hero .l{font-size:12px;opacity:.85}.hero .v{font-size:36px;font-weight:700;line-height:1.1;color:#fff}
+.hero.neg,.hero.neg .v,.hero.neg .l,.hero.neg .nm,.hero.neg .hi{color:#fff}.hero.neg{background:linear-gradient(135deg,#8a2a24,#5b1511)}
+.pill{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:99px;background:rgba(255,255,255,.18);font-size:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.stat{background:var(--lg);border-radius:14px;padding:12px}.stat.gold{background:var(--lgold);border:1px solid #eadcae}
+.stat .l{font-size:12px;color:var(--mut)}.stat .v{font-size:19px;font-weight:700;color:var(--g)}.stat.gold .v{color:#7a5d10}.stat .v.neg{color:var(--red)}
+.kpi{border-radius:16px;padding:14px;color:#fff}.kpi .l{font-size:12px;opacity:.9}.kpi .v{font-size:21px;font-weight:700}
+.k1{background:linear-gradient(135deg,#1a4d2e,#2c7a47)}.k2{background:linear-gradient(135deg,#a8862f,#d4b45c)}.k3{background:linear-gradient(135deg,#8a2a24,#c0504a)}.k4{background:linear-gradient(135deg,#1f5f7a,#3b8fb0)}
+.bar{height:11px;background:#e4e8e5;border-radius:99px;overflow:hidden;margin:8px 0 4px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--ok));border-radius:99px}
+.hb{display:flex;align-items:center;gap:8px;margin:9px 0;font-size:13px}.hb span.n{width:92px;flex:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hb .bar{flex:1;margin:0;height:14px}.hb b{width:62px;text-align:right;flex:none;font-size:12px}
+.ringwrap{display:flex;align-items:center;gap:16px}.ring{position:relative;width:104px;height:104px;flex:none}.ring svg{transform:rotate(-90deg)}.ring .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;color:var(--g);font-size:19px;line-height:1}.ring .c small{font-size:10px;color:var(--mut);font-weight:500}
+table{width:100%;border-collapse:collapse;font-size:14px}th{background:var(--g);color:#fff;text-align:left;padding:8px;font-weight:600}th:first-child{border-radius:8px 0 0 8px}th:last-child{border-radius:0 8px 8px 0}
+td{padding:9px 8px;border-bottom:1px solid #edf0ee}td.r,th.r{text-align:right}tr.tot td{font-weight:700;background:var(--lgold)}
+label{font-size:13px;color:var(--mut);display:block;margin:10px 0 4px}
+input,select{width:100%;padding:12px;border:1.5px solid #cfd8d2;border-radius:10px;font:16px inherit;font-family:inherit;background:#fff}input:focus,select:focus{outline:0;border-color:var(--g)}
+.auth{max-width:420px;margin:0 auto;padding:30px 20px}
+.auth .logo{text-align:center;margin-bottom:18px}.auth .logo img{width:96px}.auth .logo h1{color:var(--g);margin:8px 0 2px;font-size:20px}.auth .logo p{margin:0;color:#9b7d2a;font-size:12px;font-weight:600}
+.msg{padding:10px 12px;border-radius:10px;font-size:14px;margin-top:12px}.msg.e{background:#fdeceb;color:var(--red)}.msg.o{background:var(--lg);color:var(--g)}
+.link{color:var(--g);font-weight:600;cursor:pointer;text-align:center;display:block;margin-top:14px;font-size:14px;text-decoration:underline}
+.badge{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--lg);color:var(--g);font-weight:600}.badge.w{background:#fff1d6;color:#8a5a00}
+.row{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.mrow{padding:12px 0;border-bottom:1px solid #edf0ee;cursor:pointer}.mrow:last-child{border:0}
+.av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--g),#2c7a47);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none;border:2px solid var(--gold)}
+.pos{color:var(--ok)}.neg{color:var(--red)}.empty{color:var(--mut);text-align:center;padding:14px;font-size:14px}.foot{text-align:center;color:var(--mut);font-size:11px;margin-top:20px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #dfe5e1;display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:6;box-shadow:0 -4px 14px rgba(15,45,25,.08)}
+nav button{flex:1;max-width:150px;border:0;background:none;font-family:inherit;color:var(--mut);padding:6px 4px;border-radius:12px;font-size:11px;position:relative;cursor:pointer}
+nav button i{display:block;font-style:normal;font-size:20px;line-height:1.2}nav button.on{color:var(--g);font-weight:700;background:var(--lg)}
+nav .dot{position:absolute;top:2px;right:22%;background:var(--red);color:#fff;border-radius:99px;font-size:10px;min-width:16px;height:16px;line-height:16px;font-style:normal}
+.mst{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;font-size:14px;font-weight:600}.mst span{font-size:22px}
+.mst.ok{background:var(--lg);color:var(--g)}.mst.due{background:#fdf0cf;color:#7a5200}.mst.late{background:#fdeceb;color:var(--red)}
+.strip{display:flex;gap:4px;margin-top:12px}.mo{flex:1;text-align:center;font-size:11px;color:var(--mut)}
+.mo i{display:block;width:34px;height:34px;border-radius:50%;margin:0 auto 3px;line-height:34px;font-style:normal;font-weight:700;font-size:15px}
+.mo i.paid{background:var(--ok);color:#fff}.mo i.late{background:#fbe3e1;color:var(--red)}.mo i.due{background:#fdf0cf;color:#8a5a00}.mo i.future,.mo i.na{background:#eef0ee;color:#9aa5a0}
+.gt th.c,.gt td.c{text-align:center;padding:6px 2px}.gt td:first-child{white-space:nowrap;font-size:13px;padding-right:6px}
+.gt th{padding:7px 1px!important;font-size:11px;border-radius:0!important}.gt td:first-child{font-size:12px;max-width:62px;overflow:hidden;text-overflow:ellipsis}.gc{width:33px;height:36px;border-radius:10px;border:0;font:700 15px inherit;font-family:inherit;cursor:pointer}
+.gc.paid{background:var(--ok);color:#fff}.gc.late{background:#fbe3e1;color:var(--red)}.gc.due{background:#fdf0cf;color:#8a5a00}.gc.future{background:#eef0ee;color:#9aa5a0}.gc.na{background:#f4f4f4;color:#ccc}
+.verse{background:linear-gradient(135deg,#fffdf5,#f7efd8);border:1px solid #eadcae;text-align:center}
+.verse .vt{font-size:12px;color:var(--g);font-weight:700}.verse .ar{font-family:'Amiri','Scheherazade New',serif;font-size:25px;line-height:2.1;color:#0f2d19;margin:8px 0}
+.verse .bn{font-size:14px;line-height:1.6}.verse .src{font-size:12px;color:#8a6f1f;margin:6px 0 10px}
+a.btn{display:inline-block;text-decoration:none}
+@media(max-width:400px){nav button{font-size:10px;padding:6px 1px}nav button i{font-size:18px}nav{padding-left:2px;padding-right:2px}}
+#pr{display:none}
+.nt{border-radius:14px;padding:12px;margin-top:10px;background:var(--lgold);border:1px solid #eadcae}.nt.pin{border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,76,.25)}
+.nt b{color:#6b5413}.nt p{margin:4px 0 0;font-size:14px;white-space:pre-wrap}textarea{width:100%;padding:12px;border:1.5px solid #cfd8d2;border-radius:10px;font:16px inherit;font-family:inherit;min-height:80px}
+@media print{body>*:not(#pr){display:none!important}#pr{display:block!important}body{background:#fff}#pr table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}#pr th{background:#1a4d2e!important;color:#fff!important;padding:6px;text-align:left;-webkit-print-color-adjust:exact;print-color-adjust:exact}#pr td{border:1px solid #ccc;padding:6px}#pr .r{text-align:right}@page{margin:14mm}}
+:root{--card:#fff;--line:#edf0ee;--inp:#fff}
+[data-theme=dark]{--cream:#0d1610;--card:#16221a;--lg:#1e3125;--lgold:#2b2713;--tx:#e8eee9;--mut:#9db0a3;--g:#2f7d4b;--gd:#0b2314;--line:#26372c;--inp:#101a14}
+.card{background:var(--card)}td{border-bottom-color:var(--line)}.mrow{border-bottom-color:var(--line)}
+input,select,textarea{background:var(--inp);color:var(--tx)}
+nav{background:var(--card);overflow-x:auto}nav button{min-width:48px}
+header .ib{background:rgba(255,255,255,.15);border:0;color:#fff;width:34px;height:34px;border-radius:10px;font-size:16px;cursor:pointer;position:relative;flex:none;padding:0}
+.bdot{position:absolute;top:-5px;right:-5px;background:var(--red);color:#fff;border-radius:99px;font-size:10px;min-width:16px;height:16px;line-height:16px;font-style:normal}
+header{gap:8px}header h1{font-size:14px}
+.chips{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px}.chip{flex:none;border:1.5px solid var(--g);background:transparent;color:var(--g);border-radius:99px;padding:6px 14px;font:600 13px inherit;font-family:inherit;cursor:pointer}.chip.on{background:var(--g);color:#fff}
+.sk{height:90px;border-radius:18px;margin-bottom:14px;background:linear-gradient(90deg,#e6e9e5 25%,#f3f5f2 50%,#e6e9e5 75%);background-size:200% 100%;animation:sh 1.2s infinite}.sk.h{height:150px}@keyframes sh{to{background-position:-200% 0}}
+main>*{animation:fi .3s ease both}@keyframes fi{from{opacity:0;transform:translateY(8px)}}.btn:active{transform:scale(.97)}
+#sh{display:none;position:fixed;inset:0;z-index:20}#sh.on{display:block}.shb{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+.shc{position:absolute;left:0;right:0;bottom:0;max-width:680px;margin:0 auto;background:var(--card);color:var(--tx);border-radius:22px 22px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto;animation:up .25s}
+.shg{width:44px;height:4px;border-radius:9px;background:#c5cdc8;margin:0 auto 12px}@keyframes up{from{transform:translateY(40px);opacity:0}}
+.webc{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--tx);border-left:5px solid var(--gold)}
+.mcard{background:linear-gradient(135deg,#0f2d19,#1a4d2e 60%,#2c7a47);color:#fff;border-radius:18px;padding:14px;border:2px solid var(--gold);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.mch{display:flex;gap:10px;align-items:center;border-bottom:1px solid rgba(201,168,76,.5);padding-bottom:8px}.mch img{width:34px;height:34px;background:#fff;border-radius:8px;padding:2px}.mch b{display:block;font-size:16px;color:var(--gold)}.mch small{font-size:11px;opacity:.85}
+.mcb{display:flex;gap:12px;align-items:center;margin-top:12px}.mcn{font-weight:700;font-size:17px}.mcc{color:var(--gold);font-weight:700;letter-spacing:1px;font-size:14px}.mcb small{opacity:.85;font-size:11px}.qr{width:76px;height:76px;background:#fff;border-radius:8px;padding:3px}.mcf{margin-top:10px;font-size:10px;opacity:.75;text-align:center}
+.cam{position:absolute;right:-4px;bottom:-2px;background:var(--gold);border-radius:50%;width:24px;height:24px;line-height:24px;font-size:13px}
+[data-theme=dark] .card h2,[data-theme=dark] .stat .v,[data-theme=dark] .link,[data-theme=dark] .badge,[data-theme=dark] nav button.on,[data-theme=dark] .btn.out,[data-theme=dark] .ring .c,[data-theme=dark] .chip,[data-theme=dark] .auth .logo h1,[data-theme=dark] .mst.ok,[data-theme=dark] .msg.o,[data-theme=dark] .shc h2{color:#86d6a6}
+[data-theme=dark] .btn.out,[data-theme=dark] .chip{border-color:#86d6a6}[data-theme=dark] .chip.on{background:#2f7d4b;color:#fff}
+[data-theme=dark] nav{border-top-color:#26372c}[data-theme=dark] .stat.gold .v{color:#e3c46f}[data-theme=dark] .nt b{color:#e3c46f}
+[data-theme=dark] .verse{background:linear-gradient(135deg,#1c2a1f,#2a2815);border-color:#3b3a1d}[data-theme=dark] .verse .ar,[data-theme=dark] .verse .vt{color:#f1e7c4}[data-theme=dark] .verse .src{color:#c9a84c}
+[data-theme=dark] .bar{background:#26372c}[data-theme=dark] input,[data-theme=dark] select,[data-theme=dark] textarea{border-color:#33493a}
+[data-theme=dark] .mst.due{background:#3a3010;color:#f0d684}[data-theme=dark] .mst.late{background:#3a1b19;color:#ff9a92}
+[data-theme=dark] .mo i.future,[data-theme=dark] .mo i.na,[data-theme=dark] .gc.future,[data-theme=dark] .gc.na{background:#22312a;color:#6f8377}
+[data-theme=dark] .mo i.late,[data-theme=dark] .gc.late{background:#3a1b19}[data-theme=dark] .mo i.due,[data-theme=dark] .gc.due{background:#3a3010}
+[data-theme=dark] .stat,[data-theme=dark] .nt{border-color:#33493a}[data-theme=dark] .sk{background:linear-gradient(90deg,#1b2a20 25%,#233629 50%,#1b2a20 75%);background-size:200% 100%}
+[data-theme=dark] tr.tot td{background:var(--lgold)}[data-theme=dark] .msg.e{background:#3a1b19;color:#ff9a92}[data-theme=dark] .badge.w{background:#3a3010;color:#f0d684}
+[data-theme=dark] div[style*="border:1px solid #e3e9e5"]{border-color:#33493a!important}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth" class="auth hide">
+  <div class="logo"><img src="logo.png" alt="RIAS"><h1>রাবিতা ইত্তিহাদ আশ-শুব্বান</h1><p>ঐক্য • দায়িত্বশীলতা • ইসলামি মূল্যবোধ</p></div>
+  <div class="card">
+    <h2 id="authTitle">সদস্য লগইন</h2>
+    <div id="nameWrap" class="hide"><label>পূর্ণ নাম</label><input id="name" autocomplete="name"></div>
+    <label>ইমেইল</label><input id="email" type="email" autocomplete="email" inputmode="email">
+    <div id="passWrap"><label>পাসওয়ার্ড</label><input id="pass" type="password" autocomplete="current-password"></div>
+    <button class="btn" style="width:100%;margin-top:16px" id="authBtn">লগইন</button>
+    <div id="authMsg"></div>
+    <span class="link" id="toSignup">নতুন সদস্য? অ্যাকাউন্ট খুলুন</span>
+    <span class="link" id="toForgot">পাসওয়ার্ড ভুলে গেছেন?</span>
+    <span class="link hide" id="toLogin">← লগইনে ফিরে যান</span>
+    <a class="link" href="https://rabita-digital-hub.lovable.app" target="_blank" rel="noopener">🌐 আমাদের ওয়েবসাইট</a>
+  </div>
+</div>
+
+<!-- RESET PASSWORD (from email link) -->
+<div id="reset" class="auth hide">
+  <div class="card"><h2>নতুন পাসওয়ার্ড সেট করুন</h2>
+    <label>নতুন পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)</label><input id="np" type="password" autocomplete="new-password">
+    <button class="btn" style="width:100%;margin-top:16px" id="npBtn">সংরক্ষণ করুন</button><span class="link" onclick="boot()">← ফিরে যান</span><div id="npMsg"></div></div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hide">
+  <header><img src="logo.png" alt=""><div><h1>RIAS Member Portal</h1><small id="who"></small></div><div class="sp"></div><button class="ib" id="bBell" onclick="openBell()" aria-label="নোটিফিকেশন">🔔<i class="bdot hide" id="bDot"></i></button><button class="ib" id="bEye" onclick="toggleHide()" aria-label="অঙ্ক লুকান">👁</button><button class="ib" id="bTheme" onclick="toggleTheme()" aria-label="থিম">🌙</button>
+    </header>
+  <main id="main"></main>
+  <nav id="nav"></nav>
+</div>
+
+<div id="pr"></div>
+<script>
+const SB_URL='https://ofzjgvkfhhrikqshqqkt.supabase.co';
+const SB_KEY='sb_publishable_XzXm84AzYTliIGSEpM7vqg_MGO4pUL-';
+const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS={g(k){try{return localStorage.getItem(k)}catch(e){return null}},s(k,v){try{localStorage.setItem(k,v)}catch(e){}},d(k){try{localStorage.removeItem(k)}catch(e){}}};
+let HIDE=LS.g('rias_hide')==='1';
+const bn=n=>HIDE?'৳ ••••':'৳'+Number(n||0).toLocaleString('bn-BD');
+const MONTHS=['','জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+const PH={1:'পর্যায় ১ (জানু–জুন ২০২৫)',2:'পর্যায় ২ (জুলাই–ডিসেম্বর ২০২৫)',3:'পর্যায় ৩ (জানু–জুন ২০২৬)',4:'পর্যায় ৪ (জুলাই–ডিসেম্বর ২০২৬)'};
+let me=null,mode='login',isAdmin=false;
+
+function show(id){['auth','reset','app'].forEach(x=>$(x).classList.toggle('hide',x!==id))}
+function msg(el,t,ok){$(el).innerHTML=t?`<div class="msg ${ok?'o':'e'}">${esc(t)}</div>`:''}
+function errBn(e){const m=(e&&e.message)||'';
+  if(/Invalid login/i.test(m))return'ইমেইল বা পাসওয়ার্ড ভুল।';
+  if(/not confirmed/i.test(m))return'ইমেইল এখনো কনফার্ম হয়নি। ইনবক্স চেক করুন।';
+  if(/already registered/i.test(m))return'এই ইমেইলে অ্যাকাউন্ট আগেই আছে। লগইন করুন।';
+  if(/rate limit/i.test(m))return'অনেকবার চেষ্টা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।';
+  return m||'কিছু একটা সমস্যা হয়েছে।'}
+
+function setMode(m){mode=m;
+  $('authTitle').textContent={login:'সদস্য লগইন',signup:'নতুন অ্যাকাউন্ট',forgot:'পাসওয়ার্ড রিসেট'}[m];
+  $('authBtn').textContent={login:'লগইন',signup:'অ্যাকাউন্ট খুলুন',forgot:'রিসেট লিংক পাঠান'}[m];
+  $('nameWrap').classList.toggle('hide',m!=='signup');$('passWrap').classList.toggle('hide',m==='forgot');
+  $('toSignup').classList.toggle('hide',m!=='login');$('toForgot').classList.toggle('hide',m!=='login');$('toLogin').classList.toggle('hide',m==='login');
+  $('pass').autocomplete=m==='signup'?'new-password':'current-password';msg('authMsg','')}
+$('toSignup').onclick=()=>setMode('signup');$('toForgot').onclick=()=>setMode('forgot');$('toLogin').onclick=()=>setMode('login');
+
+$('authBtn').onclick=async()=>{
+  const email=$('email').value.trim(),pass=$('pass').value,name=$('name').value.trim();
+  if(!email){return msg('authMsg','ইমেইল দিন')}
+  $('authBtn').disabled=true;msg('authMsg','');
+  try{
+    if(mode==='login'){
+      if(!pass)throw{message:'পাসওয়ার্ড দিন'};
+      const{error}=await sb.auth.signInWithPassword({email,password:pass});if(error)throw error;
+    }else if(mode==='signup'){
+      if(!name)throw{message:'নাম দিন'};if(pass.length<6)throw{message:'পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে'};
+      const{data,error}=await sb.auth.signUp({email,password:pass,options:{data:{name}}});if(error)throw error;
+      if(data.session){await sb.auth.signOut();}
+      msg('authMsg','অ্যাকাউন্ট তৈরি হয়েছে। ইমেইল কনফার্মেশন লাগলে ইনবক্স দেখুন। MD অনুমোদন দিলে আপনার তথ্য দেখতে পাবেন।',true);setMode('login');msg('authMsg','অ্যাকাউন্ট তৈরি হয়েছে। MD অনুমোদন দিলে আপনার তথ্য দেখতে পাবেন (ইমেইল কনফার্মেশন চাইলে আগে সেটি করুন)।',true);
+    }else{
+      const{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(error)throw error;
+      msg('authMsg','রিসেট লিংক ইমেইলে পাঠানো হয়েছে। স্প্যাম ফোল্ডারও দেখুন।',true);
+    }
+  }catch(e){msg('authMsg',errBn(e))}
+  $('authBtn').disabled=false};
+['email','pass','name'].forEach(i=>$(i).addEventListener('keydown',e=>{if(e.key==='Enter')$('authBtn').click()}));
+
+
+
+$('npBtn').onclick=async()=>{
+  const p=$('np').value;if(p.length<6)return msg('npMsg','কমপক্ষে ৬ অক্ষর দিন');
+  const{error}=await sb.auth.updateUser({password:p});
+  if(error)return msg('npMsg',errBn(error));
+  msg('npMsg','পাসওয়ার্ড বদলানো হয়েছে ✅',true);$('np').value='';history.replaceState(null,'',location.pathname);setTimeout(()=>boot(),900)};
+
+sb.auth.onAuthStateChange((ev,session)=>{
+  if(ev==='PASSWORD_RECOVERY'){show('reset');return}
+  if(ev==='SIGNED_OUT'){me=null;LS.d('rias_cache');closeSheet();show('auth');setMode('login');return}
+  if(ev==='SIGNED_IN'||ev==='INITIAL_SESSION'){if(session)setTimeout(boot,0);else show('auth')}
+});
+
+let S={tab:'home',sel:null},D={m:[],c:[],q:[],a:[],n:[],x:[],s:{},e:[],i:[],p:[],r:[]},FS=null,OFF=0;
+const sumC=id=>D.c.filter(x=>x.member_id===id&&x.is_paid!==false).reduce((s,x)=>s+Number(x.amount),0);
+const LN=id=>{const q=D.q.filter(x=>x.member_id===id),d=q.reduce((s,x)=>s+Number(x.amount),0),r=q.reduce((s,x)=>s+Number(x.paid),0);return{total_disbursed:d,total_repaid:r,outstanding:d-r}};
+const ini=n=>esc((n||'?').trim().charAt(0).toUpperCase());
+function ring(p,col,lbl){const r=42,C=2*Math.PI*r,o=C*(1-Math.min(p,100)/100);return`<div class="ring"><svg width="104" height="104"><circle cx="52" cy="52" r="${r}" fill="none" stroke="#e4e8e5" stroke-width="11"/><circle cx="52" cy="52" r="${r}" fill="none" stroke="${col}" stroke-width="11" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${o}"/></svg><div class="c">${p}%<small>${lbl}</small></div></div>`}
+
+async function boot(){
+  const{data:{session}}=await sb.auth.getSession();const user=session&&session.user;if(!user){show('auth');return}
+  show('app');hdrBtns();$('nav').innerHTML='';skel();
+  let m=null,error=null;try{const r=await sb.from('members').select('*').eq('id',user.id).maybeSingle();m=r.data;error=r.error}catch(e){error=e}
+  if(error&&(!navigator.onLine||/fetch|network/i.test(error.message||''))){const c=loadCache(user.id);if(c){me=c.me;D=c.D;FS=c.FS;OFF=c.t;isAdmin=me.role==='admin'&&me.is_approved;$('who').textContent=(isAdmin?'MD • ':'')+me.name;S={tab:'home',sel:null};render();return}}
+  if(error){$('main').innerHTML=`<div class="card"><div class="msg e">ডেটা আনতে সমস্যা: ${esc(error.message)}</div></div>`;return}
+  if(!m){$('who').textContent=user.email;$('main').innerHTML=`<div class="card"><h2>প্রোফাইল পাওয়া যায়নি</h2><p>আপনার ইমেইল (${esc(user.email)}) সদস্য তালিকায় নেই। MD-এর সাথে যোগাযোগ করুন।</p></div>`;return}
+  me=m;isAdmin=m.role==='admin'&&m.is_approved;$('who').textContent=(isAdmin?'MD • ':'')+m.name;
+  if(!m.is_approved){$('main').innerHTML=`<div class="card"><h2>⏳ অনুমোদনের অপেক্ষায়</h2><p>আপনার অ্যাকাউন্ট এখনো MD অনুমোদন করেননি। অনুমোদন হলে এখানে আপনার তথ্য দেখা যাবে।</p></div>`;return}
+  S={tab:'home',sel:null};OFF=0;await load();render();const vq=new URLSearchParams(location.search).get('verify');if(vq){history.replaceState(null,'',location.pathname);setTimeout(()=>verifyReceipt(vq),300)}}
+
+async function load(){
+  const[m,c,q,n,st,ex,iv,pr,fs,qrq]=await Promise.all([sb.from('members').select('*').order('created_at'),sb.from('contributions').select('*').order('phase').order('year').order('month'),sb.from('qard_entries').select('*').order('loan_date'),sb.from('notices').select('*').order('created_at',{ascending:false}),sb.from('settings').select('*'),sb.from('expenses').select('*').order('spent_on',{ascending:false}),sb.from('investments').select('*').order('start_date',{ascending:false}),sb.from('payment_requests').select('*').order('created_at',{ascending:false}),sb.rpc('fund_summary'),sb.from('qard_requests').select('*').order('created_at',{ascending:false})]);
+  if(m.error&&/fetch|network/i.test(m.error.message||'')){const cc=loadCache(me.id);if(cc){D=cc.D;FS=cc.FS;OFF=cc.t;return}}
+  let a={data:[]},x={data:[]};if(isAdmin){[a,x]=await Promise.all([sb.from('audit_log').select('*').order('created_at',{ascending:false}).limit(80),sb.from('external_loans').select('*').order('loan_date')])}
+  D={m:(m.data||[]).filter(x=>!x.is_system),c:c.data||[],q:q.data||[],a:a.data||[],n:n.data||[],x:x.data||[],s:Object.fromEntries((st.data||[]).map(r=>[r.key,r.value])),e:ex.data||[],i:iv.data||[],p:pr.data||[],r:(qrq&&qrq.data)||[]};FS=fs&&fs.data||null;OFF=0;
+  const e=m.error||c.error||q.error;if(e)$('main').innerHTML=`<div class="card"><div class="msg e">${esc(e.message)}</div></div>`;else saveCache()}
+
+function go(t){S.tab=t;S.sel=null;render();scrollTo(0,0)}
+function render(){
+  const pend=D.m.filter(x=>!x.is_approved).length,pq=D.p.filter(x=>x.status==='pending').length+RQ().filter(x=>x.status==='pending').length;
+  const tabs=isAdmin?[['home','📊','ড্যাশ'],['mon','📅','মাসিক',pq],['mem','👥','সদস্য'],['fund','🏦','ফান্ড'],['ext','🤝','বহিরাগত'],['notice','📢','নোটিশ'],['more','☰','আরও',pend]]:[['home','🏠','হোম'],['dep','💰','জমা'],['loan','🤝','কর্জ'],['fund','🏦','ফান্ড'],['prof','👤','প্রোফাইল']];
+  const sub=['appr','log','prof'];
+  $('nav').innerHTML=tabs.map(t=>`<button class="${S.tab===t[0]||(isAdmin&&t[0]==='more'&&sub.includes(S.tab))?'on':''}" onclick="go('${t[0]}')"><i>${t[1]}</i>${t[2]}${t[3]?`<i class="dot">${t[3]}</i>`:''}</button>`).join('');
+  let h='';
+  if(S.sel){h=memberPage(S.sel,true)}
+  else if(isAdmin){const back=sub.includes(S.tab)?`<button class="btn sm out" onclick="go('more')" style="margin-bottom:12px">← আরও</button>`:'';
+    h=back+(S.tab==='home'?adminHome():S.tab==='mon'?monthPage():S.tab==='mem'?adminList():S.tab==='fund'?fundPage():S.tab==='ext'?extPage():S.tab==='notice'?noticePage():S.tab==='more'?morePage():S.tab==='log'?auditPage():S.tab==='appr'?approvals():profile())}
+  else h=S.tab==='prof'?profile():S.tab==='fund'?fundPage():memberPage(me,false,S.tab);
+  $('main').innerHTML=offBanner()+h;hdrBtns()}
+
+/* member pages */
+function memberPage(m,adm,tab='home'){
+  const id=m.id,c=D.c.filter(x=>x.member_id===id),l=LN(id),paid=c.filter(x=>x.is_paid!==false);
+  const tot=sumC(id),out=Number(l.outstanding||0),dis=Number(l.total_disbursed||0),rep=Number(l.total_repaid||0),net=tot-out,pct=dis?Math.round(rep/dis*100):0;
+  const byPh={};paid.forEach(x=>byPh[x.phase]=(byPh[x.phase]||0)+Number(x.amount));const mx=Math.max(1,...Object.values(byPh));
+  const rows=c.map(x=>`<tr><td>${esc(PH[x.phase]||'পর্যায় '+x.phase)}${x.month?`<br><small style="color:var(--mut)">${MONTHS[x.month]||''} ${x.year||''}</small>`:''}</td><td class="r">${bn(x.amount)}</td><td class="r">${x.is_paid===false?'<span class="badge w">বাকি</span>':'<span class="badge">জমা</span>'}${x.is_paid!==false?`<br><button class="btn sm out" style="margin-top:4px" onclick="printReceipt('${x.id}')">🧾 রসিদ</button>`:''}</td></tr>`).join('');
+  const hero=`<div class="hero ${net<0?'neg':''}"><div class="hi">আসসালামু আলাইকুম</div><div class="nm">${esc(m.name)}</div><div class="l">নিট আর্থিক অবস্থান</div><div class="v">${net<0?'−':''}${bn(Math.abs(net))}</div><span class="pill">মোট জমা − বকেয়া কর্জ</span></div>`;
+  const stats=`<div class="grid"><div class="kpi k1"><div class="l">মোট জমা</div><div class="v">${bn(tot)}</div></div><div class="kpi ${out>0?'k3':'k1'}"><div class="l">বকেয়া কর্জ</div><div class="v">${bn(out)}</div></div></div>`;
+  const phase=`<div class="card"><h2>📈 পর্যায় অনুযায়ী জমা</h2>${Object.keys(byPh).length?Object.keys(byPh).map(p=>`<div class="hb"><span class="n">পর্যায় ${p}</span><div class="bar"><i style="width:${byPh[p]/mx*100}%"></i></div><b>${bn(byPh[p])}</b></div>`).join(''):'<div class="empty">কোনো জমা নেই</div>'}</div>`;
+  const deposits=`<div class="card"><h2>💰 জমার তালিকা</h2>${rows?`<table><tr><th>বিবরণ</th><th class="r">পরিমাণ</th><th class="r">অবস্থা</th></tr>${rows}<tr class="tot"><td>মোট</td><td class="r">${bn(tot)}</td><td></td></tr></table>`:'<div class="empty">কোনো জমার তথ্য নেই</div>'}</div>`;
+  const qs=D.q.filter(x=>x.member_id===id);
+  const qcards=qs.map(x=>{const am=+x.amount,pd=+x.paid||0,rm=am-pd,pc=am?Math.round(pd/am*100):0,st=pd>=am?['পরিশোধিত','']:pd>0?['আংশিক','w']:['বাকি','w'];
+    return`<div style="border:1px solid #e3e9e5;border-radius:14px;padding:12px;margin-top:10px"><div class="row"><b>${esc(x.purpose||'কর্জ')}</b><span class="badge ${st[1]}">${st[0]}</span></div><small style="color:var(--mut)">${esc(x.loan_date||'')}${x.due_date?' • শেষ তারিখ '+esc(x.due_date):''}</small>
+    <div class="grid3" style="margin-top:8px"><div><small style="color:var(--mut)">গ্রহণ</small><br><b>${bn(am)}</b></div><div><small style="color:var(--mut)">পরিশোধ</small><br><b>${bn(pd)}</b></div><div><small style="color:var(--mut)">বাকি</small><br><b class="${rm>0?'neg':'pos'}">${bn(rm)}</b></div></div>
+    <div class="bar"><i style="width:${pc}%"></i></div>${adm?`<div style="display:flex;gap:6px;margin-top:6px"><button class="btn sm" onclick="payQ('${x.id}')">+ কিস্তি</button><button class="btn sm out" onclick="editQ('${x.id}')">✎ সংশোধন</button><button class="btn sm red" onclick="delQ('${x.id}')">✕</button></div>`:qReqBtn(x)}</div>`}).join('');
+  const loan=`<div class="card"><h2>🤝 কর্জে হাসানা</h2>${dis?`<div class="ringwrap">${ring(pct,'#1b7a3d','পরিশোধ')}<div style="flex:1"><div class="stat gold"><div class="l">মোট গ্রহণ</div><div class="v">${bn(dis)}</div></div><div class="stat" style="margin-top:8px"><div class="l">পরিশোধিত</div><div class="v">${bn(rep)}</div></div></div></div><div class="stat gold" style="margin-top:12px"><div class="l">মোট বকেয়া</div><div class="v neg">${bn(out)}</div></div><h2 style="margin:16px 0 0">বিস্তারিত (${qs.length}টি)</h2>${qcards}`:'<div class="empty">কোনো কর্জ নেই 🌿</div>'}</div>`;
+  let body;
+  if(adm)body=hero+reportCard(m)+stats+phase+deposits+loan+adminEdit(m,c,l);
+  else body=tab==='dep'?phase+deposits:tab==='loan'?loan:dateLine()+installCard()+hero+targetCard()+monthCard()+sendCard()+noticesCard()+dueCard('me')+stats+`<div class="card"><h2>💚 আপনার অগ্রগতি</h2><div class="ringwrap">${ring(pct,'#c9a84c','কর্জ শোধ')}<div style="font-size:13px;color:var(--mut);flex:1">${dis?`আপনি মোট ${bn(dis)} কর্জ নিয়েছেন, ${bn(rep)} পরিশোধ করেছেন।`:'আপনার কোনো কর্জ নেই। আলহামদুলিল্লাহ।'}</div></div></div>`+reportCard(me)+phase+webCard()+verseCard();
+  return(adm?`<div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn sm out" onclick="S.sel=null;render()">← সব সদস্য</button><button class="btn sm gold" onclick="P(()=>stmt(S.sel))">📄 স্টেটমেন্ট PDF</button><button class="btn sm out" onclick="xlMember(S.sel)">📊 Excel</button></div>`:'')+body+'<div class="foot">তথ্য শুধু আপনি ও MD দেখতে পারেন • RIAS</div>'}
+
+/* admin */
+function adminHome(){
+  const ap=D.m.filter(x=>x.is_approved);let T={c:0,d:0,r:0,o:0};ap.forEach(x=>{const l=LN(x.id);T.c+=sumC(x.id);T.d+=+l.total_disbursed||0;T.r+=+l.total_repaid||0;T.o+=+l.outstanding||0});
+  const rec=T.d?Math.round(T.r/T.d*100):0,mx=Math.max(1,...ap.map(x=>sumC(x.id))),pend=D.m.length-ap.length;
+  return`${dateLine()}${installCard()}<div class="hero"><div class="hi">MD ড্যাশবোর্ড</div><div class="nm">${esc(me.name)}</div><div class="l">সংগঠনের মোট জমা</div><div class="v">${bn(T.c)}</div><span class="pill">সক্রিয় সদস্য: ${ap.length} জন</span></div>
+  ${targetCard()}${monthSummary()}${reqList()}${riskCard()}${pend?`<div class="card" style="border-left:5px solid var(--gold);cursor:pointer" onclick="go('appr')"><b>⏳ ${pend} জন সদস্য অনুমোদনের অপেক্ষায়</b><div style="font-size:13px;color:var(--mut)">দেখতে চাপুন</div></div>`:''}
+  ${dueCard('all')}<div class="grid"><div class="kpi k2"><div class="l">মোট বিতরণ (কর্জ)</div><div class="v">${bn(T.d)}</div></div><div class="kpi k4"><div class="l">মোট পরিশোধ</div><div class="v">${bn(T.r)}</div></div></div>
+  <div class="card" style="margin-top:14px"><h2>🤝 কর্জে হাসানা আদায়</h2><div class="ringwrap">${ring(rec,'#1b7a3d','আদায়')}<div style="flex:1"><div class="stat gold"><div class="l">বকেয়া</div><div class="v neg">${bn(T.o)}</div></div><div class="stat" style="margin-top:8px"><div class="l">নিট (জমা − বকেয়া)</div><div class="v">${bn(T.c-T.o)}</div></div></div></div></div>
+  <div class="card"><h2>👥 সদস্যভিত্তিক জমা</h2>${ap.map(x=>`<div class="hb"><span class="n">${esc(dn1(x))}</span><div class="bar"><i style="width:${sumC(x.id)/mx*100}%"></i></div><b>${bn(sumC(x.id))}</b></div>`).join('')}</div>
+  <div class="card"><h2>⚠️ কর্জ বকেয়া (সদস্যভিত্তিক)</h2>${ap.filter(x=>+LN(x.id).outstanding>0).map(x=>{const l=LN(x.id),p=Math.round(l.total_repaid/l.total_disbursed*100);return`<div class="hb"><span class="n">${esc(dn1(x))}</span><div class="bar"><i style="width:${p}%"></i></div><b>${bn(l.outstanding)}</b></div>`}).join('')||'<div class="empty">কোনো বকেয়া নেই</div>'}</div>${webCard()}${verseCard()}`}
+
+function adminList(){const ap=D.m.filter(x=>x.is_approved);
+  return`<div class="card"><h2>👥 সকল সদস্য (${ap.length})</h2><input placeholder="🔍 নাম / কোড দিয়ে খুঁজুন" oninput="fq(this.value)" style="margin-bottom:6px">${ap.map(x=>{const net=sumC(x.id)-(+LN(x.id).outstanding||0);return`<div class="mrow" data-n="${esc((x.name+' '+(x.member_code||'')+' '+(x.email||'')).toLowerCase())}" onclick="S.sel=D.m.find(z=>z.id==='${x.id}');render();scrollTo(0,0)"><div class="row">${av(x)}<div style="flex:1"><b>${esc(x.name)}</b> ${x.role==='admin'?'<span class="badge">MD</span>':''}<br><small style="color:var(--mut)">জমা ${bn(sumC(x.id))} • বকেয়া ${bn(LN(x.id).outstanding||0)}</small></div><b class="${net<0?'neg':'pos'}">${net<0?'−':''}${bn(Math.abs(net))}</b></div></div>`}).join('')}</div>`}
+
+function approvals(){const p=D.m.filter(x=>!x.is_approved);
+  return`<div class="card"><h2>✅ অনুমোদনের অপেক্ষায় (${p.length})</h2>${p.map(x=>`<div class="mrow" style="cursor:default"><div class="row">${av(x)}<div style="flex:1"><b>${esc(x.name)}</b><br><small style="color:var(--mut)">${esc(x.email)}</small></div><button class="btn sm" onclick="approve('${x.id}')">অনুমোদন</button></div></div>`).join('')||'<div class="empty">কেউ অপেক্ষায় নেই 🎉</div>'}</div><div class="card"><small style="color:var(--mut)">সদস্য নিজে "অ্যাকাউন্ট খুলুন" থেকে সাইন-আপ করলে এখানে দেখাবে।</small></div>`}
+
+async function approve(id){const{error}=await sb.from('members').update({is_approved:true}).eq('id',id);if(error)return alert(error.message);await load();render()}
+async function refresh(){await load();render()}
+
+function adminEdit(m,c,l){
+  const self=m.id===me.id,isA=m.role==='admin';
+  return`<div class="card"><h2>🏷️ ডাকনাম</h2><input id="nk" value="${esc(m.nickname||'')}" placeholder="যেমন: Rafi"><small style="color:var(--mut)">তালিকা/ড্যাশবোর্ডে এই নাম দেখাবে। প্রোফাইল, কার্ড ও রসিদে পুরো নাম থাকবে।</small><button class="btn out" style="width:100%;margin-top:10px" onclick="saveNick('${m.id}')">সংরক্ষণ</button></div><div class="card"><h2>📞 ফোন নম্বর</h2><input id="phn" type="tel" inputmode="tel" value="${esc(m.phone||'')}" placeholder="01XXXXXXXXX"><small style="color:var(--mut)">WhatsApp রিমাইন্ডার পাঠাতে লাগবে</small><button class="btn out" style="width:100%;margin-top:10px" onclick="savePhone('${m.id}')">সংরক্ষণ</button></div>
+  <div class="card"><h2>🛠️ MD: কর্জ যোগ করুন</h2>
+   <label>কারণ</label><input id="qP" placeholder="যেমন: ভর্তি ফি">
+   <div class="grid"><div><label>কর্জের তারিখ</label><input id="qD" type="date"></div><div><label>ফেরতের শেষ তারিখ</label><input id="qDue" type="date"></div></div>
+   <label>অঙ্ক (৳)</label><input id="qA" type="number" inputmode="numeric">
+   <label>এখনই কিছু পরিশোধ হয়ে থাকলে (৳)</label><input id="qPd" type="number" inputmode="numeric" value="0">
+   <button class="btn gold" style="width:100%;margin-top:12px" onclick="addQ('${m.id}')">কর্জ সংরক্ষণ</button></div>
+  <div class="card"><h2>🛠️ MD: জমা যোগ করুন</h2>
+   <label>পর্যায়</label><select id="aPh">${[1,2,3,4].map(p=>`<option value="${p}" ${p===4?'selected':''}>${PH[p]}</option>`).join('')}</select>
+   <div class="grid"><div><label>মাস</label><select id="aMo"><option value="">—</option>${MONTHS.map((x,i)=>i?`<option value="${i}">${x}</option>`:'').join('')}</select></div><div><label>বছর</label><input id="aYr" type="number" value="2026"></div></div>
+   <label>পরিমাণ (৳)</label><input id="aAm" type="number" inputmode="numeric">
+   <button class="btn" style="width:100%;margin-top:12px" onclick="addC('${m.id}')">জমা সংরক্ষণ</button>
+   ${c.length?`<label style="margin-top:16px">এন্ট্রি পরিবর্তন / মুছুন</label>${c.map(x=>`<div class="row" style="padding:6px 0;font-size:13px"><span>${esc(PH[x.phase]||x.phase)} ${x.month?MONTHS[x.month]:''} — ${bn(x.amount)}</span><span><button class="btn sm out" onclick="editC('${x.id}')">✎</button> <button class="btn sm out" onclick="tog('${x.id}',${x.is_paid===false})">${x.is_paid===false?'জমা করুন':'বাকি করুন'}</button> <button class="btn sm red" onclick="delC('${x.id}')">✕</button></span></div>`).join('')}`:''}
+  </div>
+  ${self?'':`<div class="card"><h2>👑 ভূমিকা</h2><div class="row"><span>বর্তমান: <b>${isA?'MD / Admin':'সাধারণ সদস্য'}</b></span><button class="btn sm ${isA?'red':''}" onclick="setRole('${m.id}','${isA?'member':'admin'}')">${isA?'Admin সরান':'Admin বানান'}</button></div></div>`}`}
+async function addC(id){const amount=Number($('aAm').value);if(!amount)return alert('পরিমাণ দিন');
+  const{error}=await sb.from('contributions').insert({member_id:id,phase:Number($('aPh').value),month:$('aMo').value?Number($('aMo').value):null,year:Number($('aYr').value)||null,amount,is_paid:true});if(error)return alert(error.message);await refresh()}
+async function tog(cid,paid){const{error}=await sb.from('contributions').update({is_paid:paid}).eq('id',cid);if(error)return alert(error.message);await refresh()}
+async function delC(cid){if(!confirm('এই এন্ট্রি মুছবেন?'))return;const{error}=await sb.from('contributions').delete().eq('id',cid);if(error)return alert(error.message);await refresh()}
+async function addQ(id){const amount=Number($('qA').value),paid=Number($('qPd').value)||0;if(!amount)return alert('অঙ্ক দিন');if(paid>amount)return alert('পরিশোধ অঙ্কের বেশি হতে পারে না');
+  const{error}=await sb.from('qard_entries').insert({member_id:id,purpose:$('qP').value.trim()||'কর্জ',amount,paid,loan_date:$('qD').value||null,due_date:$('qDue').value||null});if(error)return alert(error.message);await refresh()}
+async function payQ(qid){const x=D.q.find(z=>z.id===qid),rem=x.amount-x.paid;const v=Number(prompt('কত টাকা কিস্তি পেয়েছেন? (বাকি: '+rem+')'));if(!v)return;if(v>rem)return alert('বাকির চেয়ে বেশি হতে পারে না');
+  const{error}=await sb.from('qard_entries').update({paid:Number(x.paid)+v}).eq('id',qid);if(error)return alert(error.message);await refresh()}
+async function editQ(qid){const x=D.q.find(z=>z.id===qid);const a=prompt('মোট অঙ্ক',x.amount);if(a===null)return;const p=prompt('মোট পরিশোধিত',x.paid);if(p===null)return;const dd=prompt('ফেরতের শেষ তারিখ (YYYY-MM-DD, খালি রাখলে বাদ)',x.due_date||'');if(dd===null)return;
+  if(Number(p)>Number(a))return alert('পরিশোধ অঙ্কের বেশি হতে পারে না');const{error}=await sb.from('qard_entries').update({amount:Number(a),paid:Number(p),due_date:dd.trim()||null}).eq('id',qid);if(error)return alert(error.message);await refresh()}
+async function delQ(qid){if(!confirm('এই কর্জ এন্ট্রি মুছবেন? (ইতিহাসে লেখা থাকবে)'))return;const{error}=await sb.from('qard_entries').delete().eq('id',qid);if(error)return alert(error.message);await refresh()}
+async function setRole(id,role){if(!confirm(role==='admin'?'এই সদস্যকে Admin (MD) বানাবেন? সে সবার তথ্য দেখতে ও বদলাতে পারবে।':'Admin সরিয়ে সাধারণ সদস্য করবেন?'))return;
+  const{error}=await sb.from('members').update({role}).eq('id',id);if(error)return alert(error.message);await refresh()}
+
+const TB={contributions:'জমা',qard_entries:'কর্জ',members:'সদস্য',external_loans:'বহিরাগত কর্জ',notices:'নোটিশ'},AC={INSERT:'যোগ করেছেন',UPDATE:'পরিবর্তন করেছেন',DELETE:'মুছেছেন'},SK=['id','created_at','updated_at','member_id','email'];
+function diff(a){if(a.action==='INSERT'){const n=a.new_data||{};return(n.purpose?esc(n.purpose)+' • ':'')+(n.amount!=null?bn(n.amount):'')}
+  if(a.action==='DELETE'){const o=a.old_data||{};return(o.purpose?esc(o.purpose)+' • ':'')+(o.amount!=null?bn(o.amount):'')}
+  const o=a.old_data||{},n=a.new_data||{};return Object.keys(n).filter(k=>!SK.includes(k)&&JSON.stringify(o[k])!==JSON.stringify(n[k])).map(k=>`${esc(k)}: ${esc(o[k])} → ${esc(n[k])}`).join(', ')}
+function auditPage(){return`<div class="card"><h2>📝 পরিবর্তনের ইতিহাস (সর্বশেষ ${D.a.length}টি)</h2>${D.a.map(a=>`<div class="mrow" style="cursor:default"><div style="font-size:13px"><b>${esc(a.actor_name||'?')}</b> ${TB[a.table_name]||''} ${AC[a.action]||''}${a.member_name?` — <b>${esc(a.member_name)}</b>`:''}<br><span style="color:var(--mut)">${diff(a)}</span><br><small style="color:var(--mut)">${new Date(a.created_at).toLocaleString('bn-BD')}</small></div></div>`).join('')||'<div class="empty">এখনো কোনো পরিবর্তন নেই</div>'}</div>`}
+
+
+/* ---- রিমাইন্ডার ---- */
+const days=d=>Math.round((new Date(d+'T00:00:00')-new Date(new Date().toDateString()))/864e5);
+function dueItems(scope){const o=[];
+  D.q.filter(x=>scope==='all'||x.member_id===me.id).forEach(x=>{const rem=x.amount-x.paid;if(rem>0&&x.due_date&&days(x.due_date)<=7)o.push({who:scope==='all'?((D.m.find(m=>m.id===x.member_id)||{}).name||''):'',what:x.purpose||'কর্জ',rem,d:days(x.due_date),due:x.due_date})});
+  if(scope==='all')D.x.forEach(x=>{const rem=x.amount-x.paid;if(rem>0&&x.due_date&&days(x.due_date)<=7)o.push({who:x.borrower_name+' (বহিরাগত)',what:x.purpose||'কর্জ',rem,d:days(x.due_date),due:x.due_date})});
+  return o.sort((a,b)=>a.d-b.d)}
+function dueCard(scope){const it=dueItems(scope);if(!it.length)return'';
+  return`<div class="card" style="border-left:5px solid var(--gold)"><h2>⏰ রিমাইন্ডার</h2>${it.map(i=>`<div class="row" style="padding:7px 0;font-size:14px;border-bottom:1px solid #f0f2f0"><span>${i.who?'<b>'+esc(i.who)+'</b> — ':''}${esc(i.what)}<br><small style="color:var(--mut)">শেষ তারিখ ${esc(i.due)}</small></span><span style="text-align:right"><b>${bn(i.rem)}</b><br><small class="${i.d<0?'neg':''}">${i.d<0?(-i.d)+' দিন মেয়াদোত্তীর্ণ':i.d===0?'আজই শেষ':i.d+' দিন বাকি'}</small></span></div>`).join('')}</div>`}
+
+/* ---- নোটিশ বোর্ড ---- */
+const KI={notice:'📢',meeting:'🗓️',fee:'💳',eid:'🌙',urgent:'🚨'},KN={notice:'নোটিশ',meeting:'মিটিং',fee:'ফি/জমা',eid:'উৎসব/দোয়া',urgent:'জরুরি'};
+const sortedN=()=>[...D.n].sort((a,b)=>(b.pinned-a.pinned)||(new Date(b.created_at)-new Date(a.created_at)));
+function ntHtml(x,adm){return`<div class="nt ${x.pinned?'pin':''}"><div class="row"><b>${KI[x.kind]||'📢'} ${esc(x.title)}</b>${x.pinned?'<span class="badge">📌</span>':''}</div>${x.body?`<p>${esc(x.body)}</p>`:''}<small style="color:var(--mut)">${new Date(x.created_at).toLocaleDateString('bn-BD')}</small>${adm?`<div style="display:flex;gap:6px;margin-top:6px"><button class="btn sm out" onclick="pinN('${x.id}',${!x.pinned})">${x.pinned?'আনপিন':'📌 পিন'}</button><button class="btn sm red" onclick="delN('${x.id}')">✕ মুছুন</button></div>`:''}</div>`}
+function noticesCard(){const n=sortedN().slice(0,5);if(!n.length)return'';return`<div class="card"><h2>📢 নোটিশ বোর্ড</h2>${n.map(x=>ntHtml(x,false)).join('')}</div>`}
+function noticePage(){return`<div class="card"><h2>📢 নতুন নোটিশ দিন</h2><label>শিরোনাম</label><input id="nT" placeholder="যেমন: শুক্রবার মিটিং">
+  <label>ধরন</label><select id="nK">${Object.keys(KN).map(k=>`<option value="${k}">${KI[k]} ${KN[k]}</option>`).join('')}</select>
+  <label>বিস্তারিত</label><textarea id="nB"></textarea>
+  <label style="display:flex;gap:8px;align-items:center"><input id="nPin" type="checkbox" style="width:auto"> 📌 উপরে পিন করে রাখুন</label>
+  <button class="btn" style="width:100%;margin-top:12px" onclick="addN()">প্রকাশ করুন</button></div>
+  <div class="card"><h2>প্রকাশিত নোটিশ (${D.n.length})</h2>${sortedN().map(x=>ntHtml(x,true)).join('')||'<div class="empty">কোনো নোটিশ নেই</div>'}</div>`}
+async function addN(){const t=$('nT').value.trim();if(!t)return alert('শিরোনাম দিন');const{error}=await sb.from('notices').insert({title:t,body:$('nB').value.trim()||null,kind:$('nK').value,pinned:$('nPin').checked});if(error)return alert(error.message);await refresh()}
+async function delN(id){if(!confirm('নোটিশটি মুছবেন?'))return;const{error}=await sb.from('notices').delete().eq('id',id);if(error)return alert(error.message);await refresh()}
+async function pinN(id,v){const{error}=await sb.from('notices').update({pinned:v}).eq('id',id);if(error)return alert(error.message);await refresh()}
+
+/* ---- বহিরাগত কর্জ ---- */
+function extPage(){const T=D.x.reduce((t,x)=>({a:t.a+ +x.amount,p:t.p+ +x.paid}),{a:0,p:0});
+  const cards=D.x.map(x=>{const am=+x.amount,pd=+x.paid,rm=am-pd,pc=am?Math.round(pd/am*100):0,od=rm>0&&x.due_date&&days(x.due_date)<0,st=pd>=am?['পরিশোধিত','']:od?['মেয়াদোত্তীর্ণ','w']:pd>0?['আংশিক','w']:['বাকি','w'];
+   return`<div style="border:1px solid #e3e9e5;border-radius:14px;padding:12px;margin-top:10px"><div class="row"><b>${esc(x.borrower_name)}</b><span class="badge ${st[1]}">${st[0]}</span></div>
+   <small style="color:var(--mut)">${esc(x.purpose||'')}${x.phone?' • 📞 '+esc(x.phone):''}${x.reference?' • রেফারেন্স: '+esc(x.reference):''}<br>${esc(x.loan_date||'')}${x.due_date?' → শেষ তারিখ '+esc(x.due_date):''}</small>
+   <div class="grid3" style="margin-top:8px"><div><small style="color:var(--mut)">গ্রহণ</small><br><b>${bn(am)}</b></div><div><small style="color:var(--mut)">পরিশোধ</small><br><b>${bn(pd)}</b></div><div><small style="color:var(--mut)">বাকি</small><br><b class="${rm>0?'neg':'pos'}">${bn(rm)}</b></div></div>
+   <div class="bar"><i style="width:${pc}%"></i></div><div style="display:flex;gap:6px;margin-top:6px"><button class="btn sm" onclick="payX('${x.id}')">+ কিস্তি</button><button class="btn sm out" onclick="editX('${x.id}')">✎ সংশোধন</button><button class="btn sm red" onclick="delX('${x.id}')">✕</button></div></div>`}).join('');
+  return`<div class="hero"><div class="hi">বহিরাগত ঋণগ্রহীতা</div><div class="l">মোট বকেয়া</div><div class="v">${bn(T.a-T.p)}</div><span class="pill">${D.x.length} জন • বিতরণ ${bn(T.a)} • আদায় ${bn(T.p)}</span></div>
+  <div class="card"><h2>➕ নতুন বহিরাগত কর্জ</h2><label>ঋণগ্রহীতার নাম</label><input id="xN"><div class="grid"><div><label>ফোন</label><input id="xPh" type="tel" inputmode="tel"></div><div><label>রেফারেন্স / জামিনদার</label><input id="xRef"></div></div>
+   <label>কারণ</label><input id="xP"><div class="grid"><div><label>কর্জের তারিখ</label><input id="xD" type="date"></div><div><label>ফেরতের শেষ তারিখ</label><input id="xDue" type="date"></div></div>
+   <div class="grid"><div><label>অঙ্ক (৳)</label><input id="xA" type="number" inputmode="numeric"></div><div><label>ইতিমধ্যে পরিশোধ (৳)</label><input id="xPd" type="number" inputmode="numeric" value="0"></div></div>
+   <button class="btn gold" style="width:100%;margin-top:12px" onclick="addX()">সংরক্ষণ</button></div>
+  <div class="card"><h2>🤝 তালিকা</h2>${cards||'<div class="empty">এখনো কেউ নেই</div>'}</div><div class="foot">এই তথ্য শুধু Admin দেখতে পারে</div>`}
+async function addX(){const amount=Number($('xA').value),paid=Number($('xPd').value)||0,n=$('xN').value.trim();if(!n||!amount)return alert('নাম ও অঙ্ক দিন');if(paid>amount)return alert('পরিশোধ অঙ্কের বেশি হতে পারে না');
+  const{error}=await sb.from('external_loans').insert({borrower_name:n,phone:$('xPh').value.trim()||null,reference:$('xRef').value.trim()||null,purpose:$('xP').value.trim()||null,amount,paid,loan_date:$('xD').value||null,due_date:$('xDue').value||null});if(error)return alert(error.message);await refresh()}
+async function payX(id){const x=D.x.find(z=>z.id===id),rem=x.amount-x.paid;const v=Number(prompt('কত টাকা কিস্তি পেয়েছেন? (বাকি: '+rem+')'));if(!v)return;if(v>rem)return alert('বাকির চেয়ে বেশি হতে পারে না');
+  const{error}=await sb.from('external_loans').update({paid:Number(x.paid)+v}).eq('id',id);if(error)return alert(error.message);await refresh()}
+async function editX(id){const x=D.x.find(z=>z.id===id);const nm=prompt('ঋণগ্রহীতার নাম',x.borrower_name);if(nm===null||!nm.trim())return;const a=prompt('মোট অঙ্ক',x.amount);if(a===null)return;const p=prompt('মোট পরিশোধিত',x.paid);if(p===null)return;const dd=prompt('ফেরতের শেষ তারিখ (YYYY-MM-DD)',x.due_date||'');if(dd===null)return;
+  if(Number(p)>Number(a))return alert('পরিশোধ অঙ্কের বেশি হতে পারে না');const{error}=await sb.from('external_loans').update({borrower_name:nm.trim(),amount:Number(a),paid:Number(p),due_date:dd.trim()||null}).eq('id',id);if(error)return alert(error.message);await refresh()}
+async function delX(id){if(!confirm('এই এন্ট্রি মুছবেন? (ইতিহাসে লেখা থাকবে)'))return;const{error}=await sb.from('external_loans').delete().eq('id',id);if(error)return alert(error.message);await refresh()}
+
+/* ---- আরও ---- */
+function morePage(){const pend=D.m.filter(x=>!x.is_approved).length;
+  return`<div class="card"><h2>☰ আরও</h2>
+  <button class="btn out" style="width:100%;margin-bottom:10px;text-align:left" onclick="go('appr')">✅ নতুন সদস্য অনুমোদন ${pend?`<span class="badge w">${pend}</span>`:''}</button>
+  <button class="btn out" style="width:100%;margin-bottom:10px;text-align:left" onclick="go('log')">📝 পরিবর্তনের ইতিহাস</button>
+  <button class="btn out" style="width:100%;text-align:left" onclick="go('prof')">👤 প্রোফাইল ও পাসওয়ার্ড</button></div>
+  ${webCard()}${toolsCard()}${settingsCard()}<div class="card"><h2>📑 পূর্ণ অডিট রিপোর্ট</h2><div class="grid"><button class="btn" onclick="P(()=>auditDoc())">📄 PDF</button><button class="btn gold" onclick="xlAll()">📊 Excel</button></div><small style="color:var(--mut)">PDF-এর জন্য খোলা পাতায় "Save as PDF" বেছে নিন।</small></div>`}
+
+/* ---- PDF / Excel ---- */
+function printDoc(h){$('pr').innerHTML=h;setTimeout(()=>window.print(),200)}
+const bnd=()=>new Date().toLocaleDateString('bn-BD');
+function prHead(t){return`<div style="font-family:'Hind Siliguri',sans-serif;color:#111"><div style="display:flex;align-items:center;gap:12px;border-bottom:3px solid #1a4d2e;padding-bottom:10px"><img src="logo.png" style="width:60px"><div><div style="font-size:20px;font-weight:700;color:#1a4d2e">রাবিতা ইত্তিহাদ আশ-শুব্বান (RIAS)</div><div style="font-size:12px;color:#9b7d2a">ঐক্য • দায়িত্বশীলতা • ইসলামি মূল্যবোধ</div></div></div><h2 style="color:#1a4d2e;margin:14px 0 4px">${t}</h2><div style="font-size:12px;color:#555;margin-bottom:10px">তারিখ: ${bnd()}</div>`}
+const prFoot=()=>`<div style="display:flex;justify-content:space-between;margin-top:50px;font-size:12px"><div style="border-top:1px solid #333;padding-top:4px;width:40%;text-align:center">অর্থ সম্পাদক</div><div style="border-top:1px solid #333;padding-top:4px;width:40%;text-align:center">ম্যানেজিং ডিরেক্টর</div></div><div style="font-size:10px;color:#777;margin-top:14px">এটি RIAS Member Portal থেকে তৈরি কম্পিউটার-জেনারেটেড প্রতিবেদন।</div></div>`;
+function stmt(m){const c=D.c.filter(x=>x.member_id===m.id&&x.is_paid!==false),q=D.q.filter(x=>x.member_id===m.id),tot=sumC(m.id),l=LN(m.id),net=tot-l.outstanding;
+  return prHead('সদস্য আর্থিক স্টেটমেন্ট')+`<div style="font-size:14px"><b>নাম:</b> ${esc(m.name)} &nbsp;&nbsp; <b>ইমেইল:</b> ${esc(m.email)}</div>
+  <h3 style="margin:16px 0 4px">জমার বিবরণ</h3><table><tr><th>বিবরণ</th><th class="r">পরিমাণ</th></tr>${c.map(x=>`<tr><td>${esc(PH[x.phase]||'পর্যায় '+x.phase)}${x.month?' — '+MONTHS[x.month]+' '+(x.year||''):''}</td><td class="r">${bn(x.amount)}</td></tr>`).join('')||'<tr><td colspan="2">কোনো জমা নেই</td></tr>'}<tr><td><b>মোট জমা</b></td><td class="r"><b>${bn(tot)}</b></td></tr></table>
+  <h3 style="margin:16px 0 4px">কর্জে হাসানা</h3><table><tr><th>কারণ</th><th>তারিখ</th><th class="r">গ্রহণ</th><th class="r">পরিশোধ</th><th class="r">বাকি</th></tr>${q.map(x=>`<tr><td>${esc(x.purpose||'কর্জ')}</td><td>${esc(x.loan_date||'')}</td><td class="r">${bn(x.amount)}</td><td class="r">${bn(x.paid)}</td><td class="r">${bn(x.amount-x.paid)}</td></tr>`).join('')||'<tr><td colspan="5">কোনো কর্জ নেই</td></tr>'}<tr><td colspan="2"><b>মোট</b></td><td class="r"><b>${bn(l.total_disbursed)}</b></td><td class="r"><b>${bn(l.total_repaid)}</b></td><td class="r"><b>${bn(l.outstanding)}</b></td></tr></table>
+  <table><tr><th>নিট আর্থিক অবস্থান (মোট জমা − বকেয়া কর্জ)</th><th class="r">${net<0?'−':''}${bn(Math.abs(net))}</th></tr></table>`+prFoot()}
+function auditDoc(){const ap=D.m.filter(x=>x.is_approved);let T={c:0,d:0,r:0,o:0};
+  const rows=ap.map(x=>{const l=LN(x.id),c=sumC(x.id),n=c-l.outstanding;T.c+=c;T.d+=l.total_disbursed;T.r+=l.total_repaid;T.o+=l.outstanding;return`<tr><td>${esc(x.name)}</td><td class="r">${bn(c)}</td><td class="r">${bn(l.total_disbursed)}</td><td class="r">${bn(l.total_repaid)}</td><td class="r">${bn(l.outstanding)}</td><td class="r">${n<0?'−':''}${bn(Math.abs(n))}</td></tr>`}).join('');
+  const X=D.x.reduce((t,x)=>({a:t.a+ +x.amount,p:t.p+ +x.paid}),{a:0,p:0});
+  return prHead('অডিট রিপোর্ট — সদস্য আর্থিক অবস্থান')+`<table><tr><th>সদস্য</th><th class="r">মোট জমা</th><th class="r">কর্জ গ্রহণ</th><th class="r">পরিশোধ</th><th class="r">বকেয়া</th><th class="r">নিট অবস্থান</th></tr>${rows}<tr><td><b>মোট</b></td><td class="r"><b>${bn(T.c)}</b></td><td class="r"><b>${bn(T.d)}</b></td><td class="r"><b>${bn(T.r)}</b></td><td class="r"><b>${bn(T.o)}</b></td><td class="r"><b>${bn(T.c-T.o)}</b></td></tr></table>
+  <div style="font-size:12px">কর্জ আদায়ের হার: ${T.d?Math.round(T.r/T.d*100):0}%</div>
+  ${D.x.length?`<h3 style="margin:16px 0 4px">বহিরাগত কর্জ</h3><table><tr><th>নাম</th><th>কারণ</th><th class="r">গ্রহণ</th><th class="r">পরিশোধ</th><th class="r">বাকি</th></tr>${D.x.map(x=>`<tr><td>${esc(x.borrower_name)}</td><td>${esc(x.purpose||'')}</td><td class="r">${bn(x.amount)}</td><td class="r">${bn(x.paid)}</td><td class="r">${bn(x.amount-x.paid)}</td></tr>`).join('')}<tr><td colspan="2"><b>মোট</b></td><td class="r"><b>${bn(X.a)}</b></td><td class="r"><b>${bn(X.p)}</b></td><td class="r"><b>${bn(X.a-X.p)}</b></td></tr></table>`:''}`+prFoot()}
+function xlSave(wb,name){if(typeof XLSX==='undefined')return alert('Excel লাইব্রেরি লোড হয়নি। ইন্টারনেট চেক করে আবার চেষ্টা করুন।');XLSX.writeFile(wb,name)}
+const cRows=id=>D.c.filter(x=>x.member_id===id).map(x=>({সদস্য:(D.m.find(m=>m.id===x.member_id)||{}).name,পর্যায়:x.phase,মাস:x.month?MONTHS[x.month]:'',বছর:x.year||'',অঙ্ক:Number(x.amount),অবস্থা:x.is_paid===false?'বাকি':'জমা'}));
+const qRows=id=>D.q.filter(x=>x.member_id===id).map(x=>({সদস্য:(D.m.find(m=>m.id===x.member_id)||{}).name,কারণ:x.purpose||'',তারিখ:x.loan_date||'',শেষ_তারিখ:x.due_date||'',গ্রহণ:Number(x.amount),পরিশোধ:Number(x.paid),বাকি:x.amount-x.paid}));
+function xlMember(m){if(typeof XLSX==='undefined')return xlSave();const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(cRows(m.id)),'জমা');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(qRows(m.id)),'কর্জ');xlSave(wb,'RIAS_'+m.name.replace(/\s+/g,'_')+'.xlsx')}
+function xlAll(){if(typeof XLSX==='undefined')return xlSave();const ap=D.m.filter(x=>x.is_approved),wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(ap.map(x=>{const l=LN(x.id),c=sumC(x.id);return{সদস্য:x.name,মোট_জমা:c,কর্জ_গ্রহণ:l.total_disbursed,পরিশোধ:l.total_repaid,বকেয়া:l.outstanding,নিট:c-l.outstanding}})),'সারসংক্ষেপ');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(ap.flatMap(x=>cRows(x.id))),'জমা');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(ap.flatMap(x=>qRows(x.id))),'কর্জ');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(D.x.map(x=>({নাম:x.borrower_name,ফোন:x.phone||'',কারণ:x.purpose||'',তারিখ:x.loan_date||'',শেষ_তারিখ:x.due_date||'',গ্রহণ:Number(x.amount),পরিশোধ:Number(x.paid),বাকি:x.amount-x.paid}))),'বহিরাগত');
+  xlSave(wb,'RIAS_Audit_'+new Date().toISOString().slice(0,10)+'.xlsx')}
+
+
+/* ---- মাসিক জমা ---- */
+const START={y:2026,m:7},SMON=['','জানু','ফেব্রু','মার্চ','এপ্রি','মে','জুন','জুলাই','আগস্ট','সেপ্টে','অক্টো','নভে','ডিসে'];
+const stOf=id=>{const m=D.m.find(x=>x.id===id),c=m&&m.contrib_start;if(c){const p=String(c).split('-');return{y:+p[0],m:+p[1]}}return START};
+const amt=()=>Number((D.s||{}).monthly_amount)||500,dl=()=>Number((D.s||{}).deadline_day)||15;
+const phaseOf=(y,m)=>(y-2025)*2+(m<=6?1:2);
+const nowYM=()=>{const d=new Date();return{y:d.getFullYear(),m:d.getMonth()+1,d:d.getDate()}};
+const ymv=(y,m)=>y*12+m;
+const cons=()=>D.m.filter(x=>x.is_approved&&(x.role==='member'||x.role==='admin'));
+const mrow=(id,y,m)=>D.c.find(x=>x.member_id===id&&x.month===m&&x.year===y&&x.is_paid!==false);
+const pLabel=p=>PH[p]||`পর্যায় ${p} (${p%2?'জানুয়ারি–জুন':'জুলাই–ডিসেম্বর'} ${2025+Math.floor((p-1)/2)})`;
+function pMonths(p){const y=2025+Math.floor((p-1)/2),h=(p-1)%2;return Array.from({length:6},(_,i)=>({y,m:(h?7:1)+i}))}
+function cell(id,y,m){const n=nowYM();const sd=stOf(id);if(ymv(y,m)<ymv(sd.y,sd.m))return'na';if(mrow(id,y,m))return'paid';const c=ymv(y,m),t=ymv(n.y,n.m);if(c>t)return'future';if(c<t)return'late';return n.d>dl()?'late':'due'}
+function dueMonths(id){const n=nowYM(),o=[],sd=stOf(id);for(let v=ymv(sd.y,sd.m);v<=ymv(n.y,n.m);v++){const y=Math.floor((v-1)/12),m=v-y*12;if(!mrow(id,y,m))o.push({y,m})}return o}
+const SYM={paid:'✓',late:'!',due:'•',future:'–',na:'–'};
+function monthCard(){const n=nowYM(),st=cell(me.id,n.y,n.m);if(st==='na')return'';const due=dueMonths(me.id);
+  const M={paid:['✅','আলহামদুলিল্লাহ, এই মাসের জমা হয়ে গেছে','ok'],due:['⏳',`এই মাসের জমা ${bn(amt())} — ${bn(dl())} তারিখের মধ্যে`,'due'],late:['⚠️',`এই মাসের জমা ${bn(amt())} এখনো বাকি (শেষ তারিখ ${bn(dl())})`,'late'],future:['⏳','','due']}[st];
+  return`<div class="card"><h2>📅 মাসিক জমা</h2><div class="mst ${M[2]}"><span>${M[0]}</span><div>${M[1]}</div></div>
+  <div class="strip">${pMonths(phaseOf(n.y,n.m)).map(x=>{const s=cell(me.id,x.y,x.m);return`<div class="mo"><i class="${s}">${SYM[s]}</i>${SMON[x.m]}</div>`}).join('')}</div>
+  ${due.length?`<div class="msg e" style="margin-top:12px">বকেয়া জমা: ${due.length} মাস (${due.map(x=>SMON[x.m]).join(', ')}) • ${bn(due.length*amt())}</div>`:''}</div>`}
+function monthSummary(){const n=nowYM(),cs=cons().filter(x=>cell(x.id,n.y,n.m)!=='na'),paid=cs.filter(x=>mrow(x.id,n.y,n.m)).length,pc=cs.length?Math.round(paid/cs.length*100):0,dt=cs.reduce((t,x)=>t+dueMonths(x.id).length,0);
+  return`<div class="card" onclick="go('mon')" style="cursor:pointer"><h2>📅 ${MONTHS[n.m]} মাসের জমা</h2><div class="row"><b>${paid}/${cs.length} জন জমা দিয়েছেন</b><span class="badge">${pc}%</span></div><div class="bar"><i style="width:${pc}%"></i></div>${dt?`<small style="color:var(--mut)">মোট বকেয়া ${dt}টি মাস • ${bn(dt*amt())} — বিস্তারিত দেখতে চাপুন</small>`:'<small style="color:var(--mut)">সব জমা ঠিক আছে 🌿</small>'}</div>`}
+function monthPage(){const n=nowYM();if(!S.mp)S.mp=Math.max(4,phaseOf(n.y,n.m));const p=S.mp,pm=pMonths(p),cs=cons();
+  const rows=cs.map(x=>`<tr><td>${esc(x.name.split(' ')[0])}</td>${pm.map(c=>{const s=cell(x.id,c.y,c.m);return`<td class="c"><button class="gc ${s}" ${s==='na'?'disabled':''} onclick="tgl('${x.id}',${c.y},${c.m})">${SYM[s]}</button></td>`}).join('')}</tr>`).join('');
+  const tot=pm.map(c=>`<td class="c"><b>${cs.filter(x=>mrow(x.id,c.y,c.m)).length}/${cs.filter(x=>cell(x.id,c.y,c.m)!=='na').length}</b></td>`).join('');
+  const dues=cs.filter(x=>dueMonths(x.id).length);
+  return`${reqList()}<div class="card"><div class="row"><button class="btn sm out" onclick="S.mp=Math.max(4,S.mp-1);render()" ${p<=4?'disabled':''}>‹</button><b style="text-align:center;font-size:14px">${pLabel(p)}</b><button class="btn sm out" onclick="S.mp++;render()">›</button></div>
+  <div style="overflow-x:auto;margin-top:10px"><table class="gt"><tr><th>সদস্য</th>${pm.map(c=>`<th class="c">${SMON[c.m]}</th>`).join('')}</tr>${rows}<tr class="tot"><td>জমা</td>${tot}</tr></table></div>
+  <small style="color:var(--mut)">ঘরে চাপলে পেমেন্টের বিবরণ (মাধ্যম/TrxID) সহ জমা হবে; জমা হওয়া ঘরে চাপলে রসিদ/বাতিল। মাসিক অঙ্ক ${bn(amt())}</small>
+  <button class="btn gold" style="width:100%;margin-top:12px" onclick="bulk()">${MONTHS[n.m]} মাসের সবার ${bn(amt())} জমা</button></div>
+  <div class="card"><h2>⏰ বাকি জমা (${dues.length} জন)</h2>${dues.map(x=>{const dm=dueMonths(x.id),l=wa(x);return`<div class="row" style="padding:8px 0;border-bottom:1px solid #edf0ee"><div><b>${esc(x.name)}</b><br><small style="color:var(--mut)">${dm.map(d=>SMON[d.m]).join(', ')} • ${bn(dm.length*amt())}</small></div>${l?`<a class="btn sm" href="${l}" target="_blank" rel="noopener">💬 WhatsApp</a>`:'<span class="badge w">ফোন নেই</span>'}</div>`}).join('')||'<div class="empty">কারো জমা বাকি নেই 🌿</div>'}
+  ${dues.length?`<button class="btn out" style="width:100%;margin-top:12px" onclick="copyGroup()">📋 গ্রুপের জন্য মেসেজ কপি</button>`:''}</div>`}
+async function bulk(){const n=nowYM(),need=cons().filter(x=>cell(x.id,n.y,n.m)!=='na'&&!mrow(x.id,n.y,n.m));if(!need.length)return alert('সবার জমা আগেই রেকর্ড আছে');
+  if(!confirm(`${MONTHS[n.m]} মাসের জন্য ${need.length} জনের ${bn(amt())} করে জমা রেকর্ড করবেন?`))return;
+  const{error}=await sb.from('contributions').insert(need.map(x=>({member_id:x.id,phase:phaseOf(n.y,n.m),month:n.m,year:n.y,amount:amt(),is_paid:true,method:'ক্যাশ',received_by:me.name,paid_on:today()})));if(error)return alert(error.message);await refresh()}
+async function editC(cid){const x=D.c.find(z=>z.id===cid);const a=prompt('নতুন অঙ্ক (৳)',x.amount);if(a===null||!Number(a))return;const{error}=await sb.from('contributions').update({amount:Number(a)}).eq('id',cid);if(error)return alert(error.message);await refresh()}
+function wa(m){return NH(()=>wa0(m))}
+function wa0(m){const d=(m.phone||'').replace(/\D/g,'');if(!d)return'';const n=d.startsWith('88')?d:d.startsWith('0')?'88'+d:'880'+d;const dm=dueMonths(m.id);
+  const t=`আসসালামু আলাইকুম ${m.name},\nRIAS-এর মাসিক জমা (${dm.map(x=>MONTHS[x.m]).join(', ')}) বাবদ মোট ${bn(dm.length*amt())} এখনো বাকি আছে। অনুগ্রহ করে ${bn(dl())} তারিখের মধ্যে জমা দিয়ে দিন। জাযাকাল্লাহু খাইরান।\n— RIAS`;
+  return'https://wa.me/'+n+'?text='+encodeURIComponent(t)}
+async function copyGroup(){return NH(()=>copyGroup0())}
+async function copyGroup0(){const n=nowYM(),L=cons().filter(x=>dueMonths(x.id).length).map(x=>{const dm=dueMonths(x.id);return`• ${x.name} — ${dm.map(d=>SMON[d.m]).join(', ')} (${bn(dm.length*amt())})`});
+  const t=`📢 RIAS — মাসিক জমা রিমাইন্ডার\nআসসালামু আলাইকুম। নিচের সদস্যদের মাসিক জমা (${bn(amt())}) এখনো বাকি। অনুগ্রহ করে প্রতি মাসের ${bn(dl())} তারিখের মধ্যে জমা দিন।\n\n${L.join('\n')}\n\nজাযাকাল্লাহু খাইরান।`;
+  try{await navigator.clipboard.writeText(t);alert('মেসেজ কপি হয়েছে। এবার WhatsApp গ্রুপে paste করুন।')}catch(e){prompt('কপি করুন:',t)}}
+async function saveNick(id){const v=$('nk').value.trim();const{error}=await sb.from('members').update({nickname:v||null}).eq('id',id);if(error)return alert(error.message);await refresh()}
+async function savePhone(id){const{error}=await sb.from('members').update({phone:$('phn').value.trim()||null}).eq('id',id);if(error)return alert(error.message);await refresh()}
+function settingsCard(){return`<div class="card"><h2>⚙️ মাসিক জমার নিয়ম</h2><div class="grid"><div><label>মাসিক অঙ্ক (৳)</label><input id="sA" type="number" value="${amt()}"></div><div><label>শেষ তারিখ (প্রতি মাসের)</label><input id="sD" type="number" min="1" max="28" value="${dl()}"></div></div><label>লক্ষ্যমাত্রা (৳)</label><input id="sT" type="number" value="${tgt()}"><small style="color:var(--mut)">বদলালে শুধু নতুন জমায় প্রযোজ্য হবে, আগের জমার অঙ্ক বদলাবে না।</small><button class="btn" style="width:100%;margin-top:10px" onclick="saveSet()">সংরক্ষণ</button></div>`}
+async function saveSet(){const{error}=await sb.from('settings').upsert([{key:'monthly_amount',value:String(Number($('sA').value)||500)},{key:'deadline_day',value:String(Math.min(28,Math.max(1,Number($('sD').value)||15)))},{key:'target_amount',value:String(Number($('sT').value)||75000)}],{onConflict:'key'});if(error)return alert(error.message);await refresh()}
+
+/* ---- আয়াত / হাদিস ---- */
+const V=[
+{t:'আল-কুরআন • ঐক্য ও ভ্রাতৃত্ব',ar:'إِنَّمَا ٱلْمُؤْمِنُونَ إِخْوَةٌ فَأَصْلِحُوا۟ بَيْنَ أَخَوَيْكُمْ ۚ وَٱتَّقُوا۟ ٱللَّهَ لَعَلَّكُمْ تُرْحَمُونَ',bn:'মুমিনরা তো পরস্পর ভাই ভাই। কাজেই তোমরা তোমাদের ভাইদের মধ্যে আপস-মীমাংসা করে দাও এবং আল্লাহকে ভয় করো, যাতে তোমরা অনুগ্রহপ্রাপ্ত হও।',src:'সূরা হুজুরাত: ১০'},
+{t:'আল-কুরআন • একতাবদ্ধ থাকা',ar:'وَٱعْتَصِمُوا۟ بِحَبْلِ ٱللَّهِ جَمِيعًا وَلَا تَفَرَّقُوا۟',bn:'তোমরা সকলে মিলে আল্লাহর রজ্জুকে দৃঢ়ভাবে আঁকড়ে ধরো এবং পরস্পর বিচ্ছিন্ন হয়ো না।',src:'সূরা আলে ইমরান: ১০৩'},
+{t:'আল-কুরআন • সৎকাজে সহযোগিতা',ar:'وَتَعَاوَنُوا۟ عَلَى ٱلْبِرِّ وَٱلتَّقْوَىٰ ۖ وَلَا تَعَاوَنُوا۟ عَلَى ٱلْإِثْمِ وَٱلْعُدْوَٰنِ',bn:'সৎকর্ম ও খোদাভীতিতে একে অন্যের সাহায্য করো। পাপ ও সীমালঙ্ঘনের ব্যাপারে একে অন্যের সহায়তা করো না।',src:'সূরা আল-মায়িদাহ: ২'},
+{t:'আল-কুরআন • সময়ের গুরুত্ব',ar:'وَٱلْعَصْرِ. إِنَّ ٱلْإِنسَٰنَ لَفِى خُسْرٍ. إِلَّا ٱلَّذِينَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّٰلِحَٰتِ وَتَوَاصَوْا۟ بِٱلْحَقِّ وَتَوَاصَوْا۟ بِٱلصَّبْرِ',bn:'সময়ের শপথ! নিশ্চয়ই মানুষ ক্ষতির মধ্যে নিমজ্জিত। তবে তারা ছাড়া, যারা ঈমান এনেছে, সৎকাজ করেছে, পরস্পরকে সত্যের উপদেশ দিয়েছে এবং ধৈর্য ধারণের উপদেশ দিয়েছে।',src:'সূরা আসর: ১–৩'},
+{t:'আল-হাদিস • পারস্পরিক সহমর্মিতা',ar:'مَثَلُ الْمُؤْمِنِينَ فِي تَوَادِّهِمْ وَتَرَاحُمِهِمْ وَتَعَاطُفِهِمْ مَثَلُ الْجَسَدِ إِذَا اشْتَكَى مِنْهُ عُضْوٌ تَدَاعَى لَهُ سَائِرُ الْجَسَدِ بِالسَّهَرِ وَالْحُمَّى',bn:'পারস্পরিক ভালোবাসা, দয়া ও সহানুভূতির ক্ষেত্রে মুমিনদের দৃষ্টান্ত একটি দেহের মতো। যখন শরীরের কোনো একটি অঙ্গ অসুস্থ হয়, তখন পুরো শরীরই জ্বর ও অনিদ্রায় ভোগে।',src:'সহিহ মুসলিম: ২৫৮৬'},
+{t:'আল-হাদিস • সংগঠন ও কাঠামো',ar:'الْمُؤْمِنُ لِلْمُؤْمِنِ كَالْبُنْيَانِ يَشُدُّ بَعْضُهُ بَعْضًا',bn:'একজন মুমিন অপর মুমিনের জন্য একটি ইমারতের মতো, যার এক অংশ অপর অংশকে শক্তিশালী করে।',src:'সহিহ বুখারি: ৬০২৬'},
+{t:'আল-হাদিস • ভাইয়ের জন্য ভালোবাসা',ar:'لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ',bn:'তোমাদের কেউ ততক্ষণ পর্যন্ত প্রকৃত মুমিন হতে পারবে না, যতক্ষণ না সে তার ভাইয়ের জন্য তা-ই পছন্দ করবে, যা সে নিজের জন্য পছন্দ করে।',src:'সহিহ বুখারি: ১৩'},
+{t:'ইবনুল কাইয়্যিম (রহ.) • সময়ের মূল্য',ar:'إضاعة الوقت أشد من الموت، لأن إضاعة الوقت تقطعك عن الله والدار الآخرة، والموت يقطعك عن الدنيا وأهلها',bn:'সময়ের অপচয় মৃত্যুর চেয়েও ভয়াবহ। কারণ মৃত্যু তোমাকে দুনিয়া ও দুনিয়ার মানুষ থেকে বিচ্ছিন্ন করে, আর সময়ের অপচয় তোমাকে আল্লাহ ও পরকাল থেকে বিচ্ছিন্ন করে।',src:'আল-ফাওয়াইদ'},
+{t:'ইবনুল কাইয়্যিম (রহ.) • ইখলাস',ar:'العمل بغير إخلاص ولا اقتداء كالمسافر يملأ جرابه رملاً يثقله ولا ينفعه',bn:'ইখলাস ছাড়া আমল করা ওই পথিকের মতো, যে তার থলিতে বালি ভরে সফর করে। এটি তার বোঝা ভারী করে ঠিকই, কিন্তু কোনো উপকারে আসে না।',src:'আল-ফাওয়াইদ'}];
+function verseCard(){const d=Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/864e5),i=(((S.vi??d)%V.length)+V.length)%V.length,v=V[i];
+  return`<div class="card verse"><div class="vt">${v.t}</div><div class="ar" dir="rtl" lang="ar">${v.ar}</div><div class="bn">${v.bn}</div><div class="src">— ${v.src}</div><button class="btn sm out" onclick="S.vi=${(i+1)%V.length};render()">পরেরটা ›</button></div>`}
+function dateLine(){let g='',h='';try{g=new Date().toLocaleDateString('bn-BD',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}catch(e){}
+  try{h=new Intl.DateTimeFormat('bn-BD-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}).format(new Date())}catch(e){}
+  return`<div style="text-align:center;font-size:12px;color:var(--mut);margin:-2px 0 12px">${g}${h?'<br>'+h+' (আনুমানিক)':''}</div>`}
+
+/* ================= v3 ================= */
+const dn=m=>(m&&(m.nickname||m.name))||'';
+const dn1=m=>(m&&(m.nickname||String(m.name||'').split(' ')[0]))||'';
+const WEB='https://rabita-digital-hub.lovable.app';
+const webCard=()=>`<a class="card webc" href="${WEB}" target="_blank" rel="noopener"><span style="font-size:26px">🌐</span><div style="flex:1"><b>RIAS অফিসিয়াল ওয়েবসাইট</b><br><small style="color:var(--mut)">কার্যক্রম, খবর ও যোগাযোগ</small></div><span>↗</span></a>`;
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const NH=fn=>{const h=HIDE;HIDE=false;try{return fn()}finally{HIDE=h}};
+const P=fn=>printDoc(NH(fn));
+
+/* ---- হেডার বাটন / থিম / লুকানো ---- */
+function setTheme(t){document.documentElement.dataset.theme=t;const mt=document.querySelector('meta[name=theme-color]');if(mt)mt.content=t==='dark'?'#0b2314':'#1a4d2e';LS.s('rias_theme',t)}
+function initTheme(){let t=LS.g('rias_theme');if(!t)t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';setTheme(t)}
+function toggleTheme(){setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');hdrBtns()}
+function toggleHide(){HIDE=!HIDE;LS.s('rias_hide',HIDE?'1':'0');hdrBtns();if(me&&me.is_approved)render()}
+function hdrBtns(){const e=$('bEye'),t=$('bTheme'),d=$('bDot');if(e)e.textContent=HIDE?'🙈':'👁';if(t)t.textContent=document.documentElement.dataset.theme==='dark'?'☀️':'🌙';
+  if(d){const n=(me&&me.is_approved)?bellCount():0;d.textContent=n;d.classList.toggle('hide',!n)}}
+initTheme();
+
+/* ---- নিচ থেকে ওঠা শিট ---- */
+function sheet(h){let e=$('sh');if(!e){e=document.createElement('div');e.id='sh';document.body.appendChild(e)}
+  e.innerHTML=`<div class="shb" onclick="closeSheet()"></div><div class="shc"><div class="shg"></div>${h}</div>`;e.className='on';document.body.style.overflow='hidden'}
+function closeSheet(){const e=$('sh');if(e)e.className='';document.body.style.overflow=''}
+
+/* ---- অফলাইন ক্যাশ ---- */
+const saveCache=()=>LS.s('rias_cache',JSON.stringify({u:me.id,me,D,FS,t:Date.now()}));
+function loadCache(uid){try{const c=JSON.parse(LS.g('rias_cache')||'null');return c&&c.u===uid?c:null}catch(e){return null}}
+const offBanner=()=>OFF?`<div class="msg e" style="margin:0 0 12px">📴 অফলাইন — সর্বশেষ দেখা তথ্য (${new Date(OFF).toLocaleString('bn-BD')})। নতুন তথ্যের জন্য ইন্টারনেট চালু করুন।</div>`:'';
+window.addEventListener('online',()=>{if(me&&me.is_approved&&OFF)refresh()});
+const skel=()=>{$('main').innerHTML='<div class="sk h"></div><div class="sk"></div><div class="sk"></div>'};
+
+/* ---- নোটিফিকেশন ---- */
+function bellItems(){const o=[],seen=+LS.g('rias_seen')||0;
+  sortedN().forEach(x=>{if(new Date(x.created_at)>seen)o.push({i:KI[x.kind]||'📢',t:x.title,s:'নতুন নোটিশ',go:isAdmin?'notice':'home'})});
+  if(isAdmin){const pa=D.m.filter(x=>!x.is_approved).length;if(pa)o.push({i:'⏳',t:pa+' জন সদস্য অনুমোদনের অপেক্ষায়',go:'appr'});
+    const pr=D.p.filter(x=>x.status==='pending').length+RQ().filter(x=>x.status==='pending').length;if(pr)o.push({i:'💸',t:pr+'টি অনুরোধ যাচাই বাকি',go:'mon'});riskList().forEach(r=>o.push({i:'⚠️',t:r.x.name+' — '+r.n+' মাসের জমা বাকি',go:'mon'}))}
+  dueItems(isAdmin?'all':'me').forEach(d=>o.push({i:'⏰',t:(d.who?d.who+' — ':'')+d.what+' '+bn(d.rem),s:d.d<0?(-d.d)+' দিন মেয়াদোত্তীর্ণ':d.d===0?'আজই শেষ':d.d+' দিন বাকি'}));
+  if(!isAdmin){const dm=dueMonths(me.id);if(dm.length)o.push({i:'📅',t:'মাসিক জমা বাকি: '+dm.map(x=>SMON[x.m]).join(', '),s:bn(dm.length*amt()),go:'home'});
+    D.p.filter(x=>x.member_id===me.id&&new Date(x.created_at)>seen&&x.status!=='pending').forEach(x=>o.push({i:x.status==='approved'?'✅':'❌',t:MONTHS[x.month]+(x.status==='approved'?' মাসের জমা নিশ্চিত হয়েছে':' মাসের অনুরোধ গ্রহণ হয়নি — MD-কে জানান'),go:'home'}))}
+  return o}
+const bellCount=()=>{try{return bellItems().length}catch(e){return 0}};
+function openBell(){const it=bellItems();LS.s('rias_seen',String(Date.now()));
+  sheet(`<h2 style="font-size:16px;color:var(--g);margin:0 0 8px">🔔 নোটিফিকেশন</h2>${it.map(x=>`<div class="mrow" ${x.go?`onclick="closeSheet();go('${x.go}')"`:'style="cursor:default"'}><div class="row" style="justify-content:flex-start"><span style="font-size:22px">${x.i}</span><div><b style="font-size:14px">${esc(x.t)}</b>${x.s?`<br><small style="color:var(--mut)">${esc(x.s)}</small>`:''}</div></div></div>`).join('')||'<div class="empty">কোনো নতুন নোটিফিকেশন নেই 🌿</div>'}<button class="btn out" style="width:100%;margin-top:12px" onclick="closeSheet()">বন্ধ</button>`);hdrBtns()}
+
+/* ---- ছবি / কার্ড / রিপোর্ট ---- */
+const av=(m,sz)=>{const s=sz||42;return m.avatar_url?`<img class="av" src="${esc(m.avatar_url)}" style="width:${s}px;height:${s}px;object-fit:cover" alt="">`:`<div class="av" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.4)}px">${ini(m.name)}</div>`};
+function resizeImg(f,max){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>{const sz=Math.min(im.width,im.height),c=document.createElement('canvas');c.width=c.height=Math.min(max,sz);
+  c.getContext('2d').drawImage(im,(im.width-sz)/2,(im.height-sz)/2,sz,sz,0,0,c.width,c.height);URL.revokeObjectURL(im.src);c.toBlob(b=>b?res(b):rej(new Error('ছবি প্রসেস হয়নি')),'image/jpeg',.85)};im.onerror=()=>rej(new Error('ছবি পড়া যায়নি'));im.src=URL.createObjectURL(f)})}
+async function upAvatar(inp){const f=inp.files[0];if(!f)return;
+  try{const blob=await resizeImg(f,320),path=me.id+'/a.jpg';
+    const up=await sb.storage.from('avatars').upload(path,blob,{upsert:true,contentType:'image/jpeg'});if(up.error)throw up.error;
+    const url=sb.storage.from('avatars').getPublicUrl(path).data.publicUrl+'?v='+Date.now();
+    const r=await sb.rpc('set_my_profile',{p_phone:null,p_avatar:url});if(r.error)throw r.error;
+    me.avatar_url=url;const k=D.m.find(x=>x.id===me.id);if(k)k.avatar_url=url;render()}catch(e){alert('ছবি আপলোড হয়নি: '+(e.message||e))}}
+async function saveMyPhone(){const v=$('myph').value.trim();const r=await sb.rpc('set_my_profile',{p_phone:v||null,p_avatar:null});if(r.error)return alert(r.error.message);me.phone=v;const k=D.m.find(x=>x.id===me.id);if(k)k.phone=v;alert('ফোন নম্বর সংরক্ষিত হয়েছে ✅')}
+function qrUrl(t){try{return new QRious({value:t,size:200,level:'M'}).toDataURL()}catch(e){return''}}
+function cardHtml(m){const code=m.member_code||'RIAS',qr=qrUrl('RIAS|'+code+'|'+m.name);
+  return`<div class="mcard"><div class="mch"><img src="logo.png" alt=""><div><b>RIAS</b><small>রাবিতা ইত্তিহাদ আশ-শুব্বান</small></div></div><div class="mcb">${av(m,64)}<div style="flex:1;min-width:0"><div class="mcn">${esc(m.name)}</div><div class="mcc">${esc(code)}</div><small>${m.role==='admin'?'MD / Admin':'সদস্য'}${m.joined_date?' • যোগদান '+esc(m.joined_date):''}</small></div>${qr?`<img class="qr" src="${qr}" alt="QR">`:''}</div><div class="mcf">ঐক্য • দায়িত্বশীলতা • ইসলামি মূল্যবোধ</div></div>`}
+const memberCard=()=>`<div class="card"><h2>🪪 ডিজিটাল সদস্য কার্ড</h2>${cardHtml(me)}<button class="btn out" style="width:100%;margin-top:10px" onclick="printCard()">🖨️ কার্ড প্রিন্ট / PDF</button></div>`;
+const printCard=()=>printDoc(prHead('সদস্য পরিচয়পত্র')+'<div style="max-width:380px">'+cardHtml(me)+'</div></div>');
+
+function streak(id){const n=nowYM(),sd=stOf(id),cur=ymv(n.y,n.m);let k=0;for(let v=cur;v>=ymv(sd.y,sd.m);v--){const y=Math.floor((v-1)/12),m=v-y*12;if(mrow(id,y,m))k++;else if(v===cur)continue;else break}return k}
+function reportCard(m){const n=nowYM(),off=S.rm||0,v=ymv(n.y,n.m)-off,y=Math.floor((v-1)/12),mo=v-y*12,sd=stOf(m.id),act=v>=ymv(sd.y,sd.m);
+  const r=mrow(m.id,y,mo),tot=D.c.filter(x=>x.member_id===m.id&&x.is_paid!==false&&x.year===y).reduce((s,x)=>s+ +x.amount,0);
+  let el=0,pd=0;for(let k=ymv(sd.y,sd.m);k<=ymv(n.y,n.m);k++){const yy=Math.floor((k-1)/12),mm=k-yy*12;el++;if(mrow(m.id,yy,mm))pd++}
+  const pc=el?Math.round(pd/el*100):0,sk=streak(m.id),l=LN(m.id),badge=sk>=6?'🏆 অসাধারণ ধারাবাহিকতা':sk>=3?'🏅 নিয়মিত সদস্য':(pc===100&&el)?'🌟 শতভাগ নিয়মিত':'';
+  return`<div class="card"><h2>🧾 মাসিক রিপোর্ট কার্ড</h2><div class="row"><button class="btn sm out" onclick="S.rm=(S.rm||0)+1;render()">‹</button><b>${MONTHS[mo]} ${y}</b><button class="btn sm out" ${off<=0?'disabled':''} onclick="S.rm=Math.max(0,(S.rm||0)-1);render()">›</button></div>
+  ${act?`<div class="mst ${r?'ok':(off>0?'late':'due')}" style="margin-top:10px"><span>${r?'✅':'⚠️'}</span><div>${r?'এই মাসের জমা সম্পন্ন — '+bn(r.amount):'এই মাসের জমা পাওয়া যায়নি'}</div></div>`:'<div class="empty">এই মাসে মাসিক জমা শুরু হয়নি</div>'}
+  <div class="grid3" style="margin-top:10px"><div class="stat"><div class="l">জমার হার</div><div class="v">${pc}%</div></div><div class="stat"><div class="l">ধারাবাহিক</div><div class="v" style="font-size:16px">${sk} মাস</div></div><div class="stat gold"><div class="l">${y} সালে জমা</div><div class="v" style="font-size:15px">${bn(tot)}</div></div></div>
+  ${badge?`<div style="text-align:center;margin-top:10px"><span class="badge">${badge}</span></div>`:''}
+  <div style="font-size:13px;color:var(--mut);margin-top:8px">কর্জে হাসানা বাকি: <b>${bn(l.outstanding)}</b></div>
+  <button class="btn out sm" style="margin-top:10px" onclick="shareRep('${m.id}')">📤 শেয়ার করুন</button></div>`}
+async function shareRep(id){const m=D.m.find(x=>x.id===id)||me,sk=streak(id);
+  const t=`🧾 RIAS রিপোর্ট কার্ড — ${m.name}\nধারাবাহিক জমা: ${sk} মাস। আলহামদুলিল্লাহ! 🌿\n${WEB}`;
+  try{if(navigator.share)await navigator.share({text:t});else{await navigator.clipboard.writeText(t);alert('কপি হয়েছে')}}catch(e){}}
+
+/* ---- মাসিক জমা: পেমেন্ট বিবরণ, রসিদ, অনুরোধ ---- */
+const METHODS=['ক্যাশ','বিকাশ','নগদ','রকেট','ব্যাংক','অন্যান্য'];
+const mOpts=s=>METHODS.map(x=>`<option ${x===s?'selected':''}>${x}</option>`).join('');
+const rno=n=>'RIAS-R-'+String(n||0).padStart(4,'0');
+const SH=t=>`<h2 style="font-size:16px;color:var(--g);margin:0 0 6px">${t}</h2>`;
+async function tgl(id,y,m){const st=cell(id,y,m);if(st==='na')return;const mm=D.m.find(x=>x.id===id)||{},row=mrow(id,y,m);
+  if(row){return sheet(`${SH(esc(mm.name)+' — '+MONTHS[m]+' '+y)}<div class="stat" style="margin-bottom:10px"><div class="l">রসিদ ${rno(row.receipt_no)}</div><div class="v">${bn(row.amount)}</div><small style="color:var(--mut)">${esc(row.method||'মাধ্যম রেকর্ড নেই')}${row.trx_id?' • TrxID '+esc(row.trx_id):''}${row.received_by?' • গ্রহণ: '+esc(row.received_by):''}${row.paid_on?' • '+esc(row.paid_on):''}</small></div>
+    <button class="btn" style="width:100%;margin-bottom:8px" onclick="closeSheet();printReceipt('${row.id}')">🧾 রসিদ PDF</button>
+    <button class="btn out" style="width:100%;margin-bottom:8px" onclick="closeSheet();editC('${row.id}')">✎ অঙ্ক বদলান</button>
+    <button class="btn red" style="width:100%" onclick="cancelC('${id}',${y},${m})">❌ এই জমা বাতিল করুন</button>`)}
+  sheet(`${SH('✅ জমা রেকর্ড — '+esc(mm.name))}<small style="color:var(--mut)">${MONTHS[m]} ${y}</small>
+    <label>পরিমাণ (৳)</label><input id="pA" type="number" inputmode="numeric" value="${amt()}">
+    <div class="grid"><div><label>মাধ্যম</label><select id="pM">${mOpts('ক্যাশ')}</select></div><div><label>তারিখ</label><input id="pD" type="date" value="${today()}"></div></div>
+    <label>TrxID / রেফারেন্স (ক্যাশ হলে খালি)</label><input id="pT">
+    <label>গ্রহণকারী</label><input id="pR" value="${esc(me.name)}">
+    <button class="btn" style="width:100%;margin-top:14px" onclick="savePay('${id}',${y},${m})">সংরক্ষণ ও রসিদ তৈরি</button>`)}
+async function savePay(id,y,m){const amount=Number($('pA').value);if(!amount)return alert('অঙ্ক দিন');
+  const r=await sb.from('contributions').insert({member_id:id,phase:phaseOf(y,m),month:m,year:y,amount,is_paid:true,method:$('pM').value,trx_id:$('pT').value.trim()||null,received_by:$('pR').value.trim()||me.name,paid_on:$('pD').value||null});
+  if(r.error)return alert(r.error.message);closeSheet();await refresh()}
+async function cancelC(id,y,m){if(!confirm('এই জমা বাতিল করবেন?'))return;const r=await sb.from('contributions').delete().eq('member_id',id).eq('year',y).eq('month',m);if(r.error)return alert(r.error.message);closeSheet();await refresh()}
+function receiptDoc(c){const m=D.m.find(x=>x.id===c.member_id)||{};
+  const R=(a,b)=>`<tr><td style="width:35%">${a}</td><td>${b}</td></tr>`;
+  return prHead('জমার রসিদ')+`<table style="font-size:14px">${R('রসিদ নং','<b>'+rno(c.receipt_no)+'</b>')}${R('সদস্য',esc(m.name||'')+(m.member_code?' ('+esc(m.member_code)+')':''))}${R('বিবরণ',c.month?MONTHS[c.month]+' '+c.year+' — মাসিক জমা':esc(pLabel(c.phase)))}${R('পরিমাণ','<b>'+bn(c.amount)+'</b>')}${R('মাধ্যম',esc(c.method||'—'))}${c.trx_id?R('TrxID',esc(c.trx_id)):''}${R('গ্রহণকারী',esc(c.received_by||'—'))}${R('জমার তারিখ',esc(c.paid_on||String(c.created_at||'').slice(0,10)))}</table>
+  ${(()=>{const q=qrUrl(location.origin+location.pathname+'?verify='+rno(c.receipt_no));return`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><div style="font-size:12px">জাযাকাল্লাহু খাইরান। আপনার জমা আমানত হিসেবে সংরক্ষিত হলো।</div>${q?`<div style="text-align:center"><img src="${q}" style="width:78px"><div style="font-size:9px">যাচাই QR</div></div>`:''}</div>`})()}`+prFoot()}
+const printReceipt=id=>{const c=D.c.find(x=>x.id===id);if(c)P(()=>receiptDoc(c))};
+
+function sendCard(){const dm=dueMonths(me.id),pend=D.p.filter(x=>x.member_id===me.id&&x.status==='pending'),free=dm.filter(d=>!pend.some(p=>p.year===d.y&&p.month===d.m));
+  if(!pend.length&&!free.length)return'';
+  return`<div class="card"><h2>💸 জমা পাঠিয়েছেন?</h2>${pend.map(x=>`<div class="msg o" style="margin:0 0 8px">⏳ ${MONTHS[x.month]} (${bn(x.amount)}) — MD যাচাই করছেন${x.trx_id?' • TrxID '+esc(x.trx_id):''}</div>`).join('')}${free.length?`<button class="btn gold" style="width:100%" onclick="reqSheet()">✅ আমি জমা পাঠিয়েছি</button><small style="color:var(--mut)">বিকাশ/নগদ/ক্যাশে দেওয়ার পর এখানে জানান। MD যাচাই করলে রসিদ পাবেন।</small>`:''}</div>`}
+function reqSheet(){const dm=dueMonths(me.id).filter(d=>!D.p.some(p=>p.member_id===me.id&&p.status==='pending'&&p.year===d.y&&p.month===d.m));if(!dm.length)return;
+  sheet(`${SH('💸 জমার তথ্য পাঠান')}<label>কোন মাসের জমা?</label><select id="rM">${dm.map(d=>`<option value="${d.y}-${d.m}">${MONTHS[d.m]} ${d.y}</option>`).join('')}</select>
+  <label>মাধ্যম</label><select id="rW">${mOpts('বিকাশ')}</select><label>TrxID (ক্যাশ হলে খালি রাখুন)</label><input id="rT"><label>নোট (ঐচ্ছিক)</label><input id="rN">
+  <small style="color:var(--mut)">অঙ্ক: ${bn(amt())}</small><button class="btn" style="width:100%;margin-top:14px" onclick="sendReq()">পাঠান</button>`)}
+async function sendReq(){const[y,m]=$('rM').value.split('-').map(Number),w=$('rW').value,t=$('rT').value.trim();if(w!=='ক্যাশ'&&!t)return alert('TrxID দিন');
+  const{error}=await sb.from('payment_requests').insert({member_id:me.id,year:y,month:m,amount:amt(),method:w,trx_id:t||null,note:$('rN').value.trim()||null});if(error)return alert(error.message);closeSheet();await refresh()}
+function reqList(){const p=D.p.filter(x=>x.status==='pending');if(!p.length)return'';
+  return`<div class="card" style="border-left:5px solid var(--gold)"><h2>📥 জমার অনুরোধ (${p.length})</h2>${p.map(x=>{const mm=D.m.find(z=>z.id===x.member_id)||{};return`<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><div><b>${esc(mm.name)}</b><br><small style="color:var(--mut)">${MONTHS[x.month]} ${x.year} • ${bn(x.amount)} • ${esc(x.method||'')}${x.trx_id?' • '+esc(x.trx_id):''}</small></div><div style="display:flex;gap:6px"><button class="btn sm" onclick="apvReq('${x.id}')">✓ গ্রহণ</button><button class="btn sm red" onclick="rejReq('${x.id}')">✕</button></div></div>`}).join('')}<small style="color:var(--mut)">টাকা হাতে/অ্যাকাউন্টে পেয়ে যাচাইয়ের পর ✓ চাপুন — জমা ও রসিদ নিজে তৈরি হবে।</small></div>`}
+async function apvReq(id){if(!confirm('টাকা পেয়েছেন? জমা রেকর্ড হবে ও রসিদ তৈরি হবে।'))return;const{error}=await sb.rpc('approve_payment',{req:id,recv:me.name});if(error)return alert(error.message);await refresh()}
+async function rejReq(id){if(!confirm('অনুরোধটি বাতিল করবেন?'))return;const{error}=await sb.from('payment_requests').update({status:'rejected'}).eq('id',id);if(error)return alert(error.message);await refresh()}
+
+/* ---- ফান্ড ---- */
+function calcFund(){const sm=(a,k)=>a.reduce((s,x)=>s+(+x[k]||0),0);
+  const c=sm(D.c.filter(x=>x.is_paid!==false),'amount'),qd=sm(D.q,'amount'),qr=sm(D.q,'paid'),xd=sm(D.x,'amount'),xr=sm(D.x,'paid'),e=sm(D.e,'amount'),i=sm(D.i,'amount'),ir=sm(D.i,'returned'),ob=+((D.s||{}).opening_balance)||0;
+  return{contrib:c,qard_out:qd,qard_back:qr,ext_out:xd,ext_back:xr,expense:e,invest:i,invest_back:ir,opening:ob,members:D.m.filter(x=>x.is_approved).length,cash:ob+c+qr+xr+ir-qd-xd-e-i}}
+const fundData=()=>isAdmin?calcFund():FS;
+function fundTabs(){const t=isAdmin?[['over','সারসংক্ষেপ'],['cash','ক্যাশবুক'],['exp','খরচ'],['inv','বিনিয়োগ'],['ana','বিশ্লেষণ']]:[['over','সারসংক্ষেপ'],['exp','খরচ'],['inv','বিনিয়োগ']];
+  return`<div class="chips">${t.map(x=>`<button class="chip ${(S.fs||'over')===x[0]?'on':''}" onclick="S.fs='${x[0]}';render()">${x[1]}</button>`).join('')}</div>`}
+function fundPage(){const f=S.fs||'over';return fundTabs()+(f==='cash'&&isAdmin?cashPage():f==='exp'?expPage():f==='inv'?invPage():f==='ana'&&isAdmin?anaPage():overPage())}
+function overPage(){const f=fundData();if(!f)return`<div class="card"><div class="empty">ফান্ডের তথ্য পাওয়া যায়নি।${isAdmin?' (v3 SQL চালানো হয়েছে কি?)':''}</div></div>`;
+  const loans=Math.max(0,f.qard_out+f.ext_out-f.qard_back-f.ext_back),inv=Math.max(0,f.invest-f.invest_back),cash=f.cash,tot=Math.max(1,Math.max(0,cash)+loans+inv);
+  const bar=(n,v,c)=>`<div class="hb"><span class="n" style="width:110px">${n}</span><div class="bar"><i style="width:${Math.max(0,v)/tot*100}%;${c?'background:'+c:''}"></i></div><b style="width:70px">${bn(v)}</b></div>`;
+  return`<div class="hero ${cash<0?'neg':''}"><div class="hi">সংগঠনের ফান্ড</div><div class="l">বর্তমান ক্যাশ ব্যালেন্স</div><div class="v">${cash<0?'−':''}${bn(Math.abs(cash))}</div><span class="pill">সক্রিয় সদস্য: ${f.members} জন</span></div>
+  <div class="grid"><div class="kpi k1"><div class="l">মোট জমা</div><div class="v">${bn(f.contrib)}</div></div><div class="kpi k3"><div class="l">কর্জে বকেয়া</div><div class="v">${bn(loans)}</div></div><div class="kpi k4"><div class="l">মোট খরচ</div><div class="v">${bn(f.expense)}</div></div><div class="kpi k2"><div class="l">বিনিয়োগ (চলমান)</div><div class="v">${bn(inv)}</div></div></div>
+  <div class="card" style="margin-top:14px"><h2>📊 ফান্ড কোথায় আছে</h2>${bar('ক্যাশ/ব্যাংক',Math.max(0,cash))}${bar('কর্জে হাসানা',loans,'#c0504a')}${bar('বিনিয়োগ',inv,'#c9a84c')}</div>
+  <div class="card"><small style="color:var(--mut)">🔒 এখানে শুধু সংগঠনের মোট হিসাব দেখানো হয়। কোনো সদস্যের ব্যক্তিগত তথ্য অন্য সদস্য দেখতে পায় না।</small></div>${webCard()}`}
+
+const ECAT=['প্রোগ্রাম/ইভেন্ট','ছাপা ও প্রচার','যাতায়াত','খাবার/আপ্যায়ন','দান/সদকা','ওয়েবসাইট/টেক','অন্যান্য'];
+function expPage(){const T=D.e.reduce((s,x)=>s+ +x.amount,0),by={};D.e.forEach(x=>by[x.category]=(by[x.category]||0)+ +x.amount);const mx=Math.max(1,...Object.values(by));
+  return`${isAdmin?`<div class="card"><h2>➕ নতুন খরচ</h2><div class="grid"><div><label>তারিখ</label><input id="eD" type="date" value="${today()}"></div><div><label>অঙ্ক (৳)</label><input id="eA" type="number" inputmode="numeric"></div></div><label>খাত</label><select id="eC">${ECAT.map(x=>`<option>${x}</option>`).join('')}</select><label>বিবরণ</label><input id="eN" placeholder="যেমন: মিটিং আপ্যায়ন"><button class="btn gold" style="width:100%;margin-top:12px" onclick="addE()">সংরক্ষণ</button></div>`:''}
+  <div class="card"><h2>💳 অপারেশনাল খরচ</h2><div class="stat gold"><div class="l">মোট খরচ</div><div class="v">${bn(T)}</div></div>${Object.keys(by).map(k=>`<div class="hb"><span class="n" style="width:110px">${esc(k)}</span><div class="bar"><i style="width:${by[k]/mx*100}%"></i></div><b style="width:70px">${bn(by[k])}</b></div>`).join('')}</div>
+  <div class="card"><h2>🧾 খরচের তালিকা (${D.e.length})</h2>${D.e.map(x=>`<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><div><b style="font-size:14px">${esc(x.category)}</b><br><small style="color:var(--mut)">${esc(x.spent_on)}${x.note?' • '+esc(x.note):''}</small></div><div style="text-align:right"><b>${bn(x.amount)}</b>${isAdmin?`<br><button class="btn sm red" onclick="delE('${x.id}')">✕</button>`:''}</div></div>`).join('')||'<div class="empty">কোনো খরচ রেকর্ড নেই</div>'}</div>`}
+async function addE(){const a=Number($('eA').value);if(!(a>0))return alert('অঙ্ক দিন');const{error}=await sb.from('expenses').insert({spent_on:$('eD').value||today(),category:$('eC').value,amount:a,note:$('eN').value.trim()||null});if(error)return alert(error.message);await refresh()}
+async function delE(id){if(!confirm('এই খরচ মুছবেন? (ইতিহাসে লেখা থাকবে)'))return;const{error}=await sb.from('expenses').delete().eq('id',id);if(error)return alert(error.message);await refresh()}
+
+function invPage(){const T=D.i.reduce((t,x)=>({a:t.a+ +x.amount,r:t.r+ +x.returned,pl:t.pl+(x.status==='closed'?+x.returned-+x.amount:0)}),{a:0,r:0,pl:0});
+  return`<div class="hero"><div class="hi">বিনিয়োগ ট্র্যাকার</div><div class="l">মোট বিনিয়োগ</div><div class="v">${bn(T.a)}</div><span class="pill">ফেরত ${bn(T.r)} • সমাপ্তগুলোর লাভ/ক্ষতি ${T.pl<0?'−':''}${bn(Math.abs(T.pl))}</span></div>
+  ${isAdmin?`<div class="card"><h2>➕ নতুন বিনিয়োগ</h2><label>প্রকল্পের নাম</label><input id="iT"><div class="grid"><div><label>ধরন</label><select id="iK"><option>মুদারাবা</option><option>মুশারাকা</option><option>ব্যবসা/পণ্য</option><option>অন্যান্য</option></select></div><div><label>অঙ্ক (৳)</label><input id="iA" type="number" inputmode="numeric"></div></div><label>শুরুর তারিখ</label><input id="iD" type="date" value="${today()}"><label>নোট</label><input id="iN"><button class="btn gold" style="width:100%;margin-top:12px" onclick="addI()">সংরক্ষণ</button><small style="color:var(--mut)">ইসলামি নীতি: লাভ চুক্তি অনুযায়ী ভাগ হবে, ক্ষতি মূলধন অনুপাতে বহন করতে হবে।</small></div>`:''}
+  <div class="card"><h2>📈 প্রকল্পসমূহ (${D.i.length})</h2>${D.i.map(x=>{const cl=x.status==='closed',pl=+x.returned-+x.amount;return`<div style="border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px"><div class="row"><b>${esc(x.title)}</b><span class="badge ${cl?'':'w'}">${cl?'সমাপ্ত':'চলমান'}</span></div><small style="color:var(--mut)">${esc(x.kind||'')} • ${esc(x.start_date||'')}${x.note?' • '+esc(x.note):''}</small>
+   <div class="grid3" style="margin-top:8px"><div><small style="color:var(--mut)">বিনিয়োগ</small><br><b>${bn(x.amount)}</b></div><div><small style="color:var(--mut)">ফেরত</small><br><b>${bn(x.returned)}</b></div><div><small style="color:var(--mut)">${cl?(pl>=0?'লাভ':'ক্ষতি'):'অবস্থা'}</small><br><b class="${cl?(pl>=0?'pos':'neg'):''}">${cl?bn(Math.abs(pl)):'—'}</b></div></div>
+   ${isAdmin?`<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button class="btn sm" onclick="retI('${x.id}')">+ ফেরত/মুনাফা</button>${cl?`<button class="btn sm out" onclick="stI('${x.id}','active')">আবার চালু</button>`:`<button class="btn sm out" onclick="stI('${x.id}','closed')">সমাপ্ত করুন</button>`}<button class="btn sm red" onclick="delI('${x.id}')">✕</button></div>`:''}</div>`}).join('')||'<div class="empty">কোনো বিনিয়োগ নেই</div>'}</div>`}
+async function addI(){const a=Number($('iA').value),t=$('iT').value.trim();if(!t||!(a>0))return alert('নাম ও অঙ্ক দিন');const{error}=await sb.from('investments').insert({title:t,kind:$('iK').value,amount:a,start_date:$('iD').value||today(),note:$('iN').value.trim()||null});if(error)return alert(error.message);await refresh()}
+async function retI(id){const x=D.i.find(z=>z.id===id),v=Number(prompt('কত টাকা ফেরত/মুনাফা পেয়েছেন? (মূলধন + লাভ মিলিয়ে)'));if(!(v>0))return;const{error}=await sb.from('investments').update({returned:Number(x.returned)+v}).eq('id',id);if(error)return alert(error.message);await refresh()}
+async function stI(id,s){const{error}=await sb.from('investments').update({status:s}).eq('id',id);if(error)return alert(error.message);await refresh()}
+async function delI(id){if(!confirm('এই বিনিয়োগ মুছবেন?'))return;const{error}=await sb.from('investments').delete().eq('id',id);if(error)return alert(error.message);await refresh()}
+
+function txs(){const o=[];D.c.filter(x=>x.is_paid!==false).forEach(x=>{const mm=D.m.find(z=>z.id===x.member_id)||{};o.push({d:x.paid_on||String(x.created_at||'').slice(0,10),t:'+',l:'জমা — '+(mm.name||'')+(x.month?' ('+SMON[x.month]+')':''),a:+x.amount,s:[x.method,x.trx_id].filter(Boolean).join(' • ')})});
+  D.e.forEach(x=>o.push({d:x.spent_on,t:'−',l:'খরচ — '+x.category,a:+x.amount,s:x.note||''}));
+  D.i.forEach(x=>o.push({d:x.start_date||String(x.created_at||'').slice(0,10),t:'−',l:'বিনিয়োগ — '+x.title,a:+x.amount,s:x.kind||''}));
+  return o.sort((a,b)=>String(b.d).localeCompare(String(a.d)))}
+function cashRows(f){return[['প্রারম্ভিক / ১ম পর্যায়ের সমন্বয়',Math.abs(f.opening),f.opening<0?-1:1],['সদস্যদের জমা',f.contrib,1],['কর্জ ফেরত (সদস্য)',f.qard_back,1],['কর্জ ফেরত (বহিরাগত)',f.ext_back,1],['বিনিয়োগ থেকে ফেরত',f.invest_back,1],['কর্জ বিতরণ (সদস্য)',f.qard_out,-1],['কর্জ বিতরণ (বহিরাগত)',f.ext_out,-1],['অপারেশনাল খরচ',f.expense,-1],['বিনিয়োগ',f.invest,-1]]}
+function cashPage(){const f=calcFund(),t=txs().slice(0,30);
+  return`<div class="hero ${f.cash<0?'neg':''}"><div class="hi">ক্যাশবুক</div><div class="l">হিসাবকৃত ব্যালেন্স</div><div class="v">${f.cash<0?'−':''}${bn(Math.abs(f.cash))}</div></div>
+  <div class="card"><h2>📒 আয়-ব্যয়ের সারসংক্ষেপ</h2><table>${cashRows(f).map(r=>`<tr><td>${r[0]}</td><td class="r ${r[2]>0?'pos':'neg'}">${r[2]>0?'+':'−'} ${bn(r[1])}</td></tr>`).join('')}<tr class="tot"><td>ব্যালেন্স</td><td class="r">${f.cash<0?'−':''}${bn(Math.abs(f.cash))}</td></tr></table>
+  <button class="btn out" style="width:100%;margin-top:10px" onclick="fixOpen()">⚖️ বাস্তব ব্যালেন্সের সাথে মিলান</button><small style="color:var(--mut)">হাতে/অ্যাকাউন্টে আসলে যত টাকা আছে তা দিলে প্রারম্ভিক ব্যালেন্স নিজে সমন্বয় হবে।</small>
+  <button class="btn" style="width:100%;margin-top:10px" onclick="P(()=>cashDoc())">📄 ক্যাশবুক PDF</button></div>
+  <div class="card"><h2>🕑 সাম্প্রতিক লেনদেন</h2>${t.map(x=>`<div class="row" style="padding:7px 0;border-bottom:1px solid var(--line);font-size:13px"><div><b>${esc(x.l)}</b><br><small style="color:var(--mut)">${esc(x.d)}${x.s?' • '+esc(x.s):''}</small></div><b class="${x.t==='+'?'pos':'neg'}">${x.t}${bn(x.a)}</b></div>`).join('')||'<div class="empty">লেনদেন নেই</div>'}</div>`}
+async function fixOpen(){const f=calcFund(),v=prompt('এখন আসলে ফান্ডে কত টাকা আছে? (৳)');if(v===null||v==='')return;const a=Number(v);if(isNaN(a))return alert('সংখ্যা দিন');const ob=a-(f.cash-f.opening);
+  const{error}=await sb.from('settings').upsert({key:'opening_balance',value:String(ob)},{onConflict:'key'});if(error)return alert(error.message);await refresh()}
+function cashDoc(){const f=calcFund();return prHead('ক্যাশবুক প্রতিবেদন')+`<table><tr><th>খাত</th><th class="r">পরিমাণ</th></tr>${cashRows(f).map(r=>`<tr><td>${r[0]}</td><td class="r">${r[2]>0?'+':'−'} ${bn(r[1])}</td></tr>`).join('')}<tr><td><b>ব্যালেন্স</b></td><td class="r"><b>${f.cash<0?'−':''}${bn(Math.abs(f.cash))}</b></td></tr></table>
+  <h3 style="margin:14px 0 4px">সাম্প্রতিক লেনদেন</h3><table><tr><th>তারিখ</th><th>বিবরণ</th><th class="r">অঙ্ক</th></tr>${txs().slice(0,60).map(x=>`<tr><td>${esc(x.d)}</td><td>${esc(x.l)}${x.s?' ('+esc(x.s)+')':''}</td><td class="r">${x.t}${bn(x.a)}</td></tr>`).join('')}</table>`+prFoot()}
+
+function monthsFrom(){const n=nowYM(),o=[];for(let v=ymv(START.y,START.m);v<=ymv(n.y,n.m);v++){const y=Math.floor((v-1)/12),m=v-y*12;o.push({y,m})}return o}
+function anaPage(){const cs=cons(),ms=monthsFrom();
+  const rows=ms.map(({y,m})=>{const el=cs.filter(x=>cell(x.id,y,m)!=='na'),pd=el.filter(x=>mrow(x.id,y,m));return{y,m,el:el.length,pd:pd.length,amt:pd.reduce((s,x)=>s+ +mrow(x.id,y,m).amount,0),pc:el.length?Math.round(pd.length/el.length*100):0}});
+  const rank=cs.map(x=>{const sd=stOf(x.id),tot=ms.filter(({y,m})=>ymv(y,m)>=ymv(sd.y,sd.m)).length,pd=ms.filter(({y,m})=>mrow(x.id,y,m)).length;return{x,pd,tot,pc:tot?Math.round(pd/tot*100):0,st:streak(x.id)}}).sort((a,b)=>b.pc-a.pc);
+  const me_={};D.c.filter(x=>x.method&&x.is_paid!==false).forEach(x=>me_[x.method]=(me_[x.method]||0)+1);const mt=Object.values(me_).reduce((a,b)=>a+b,0);
+  const n=nowYM(),cur=rows[rows.length-1]||{el:0,pd:0},exp=cur.el*amt(),got=cur.amt;
+  return`<div class="card"><h2>📅 এই মাসের পূর্বাভাস</h2><div class="grid"><div class="stat"><div class="l">প্রত্যাশিত</div><div class="v">${bn(exp)}</div></div><div class="stat gold"><div class="l">আদায় হয়েছে</div><div class="v">${bn(got)}</div></div></div><div class="bar"><i style="width:${exp?Math.round(got/exp*100):0}%"></i></div><small style="color:var(--mut)">বাকি ${bn(Math.max(0,exp-got))}</small></div>
+  <div class="card"><h2>📊 মাসভিত্তিক আদায়</h2>${rows.map(r=>`<div class="hb"><span class="n" style="width:80px">${SMON[r.m]} ${String(r.y).slice(2)}</span><div class="bar"><i style="width:${r.pc}%"></i></div><b style="width:78px">${r.pd}/${r.el} • ${r.pc}%</b></div>`).join('')}</div>
+  <div class="card"><h2>🏅 সদস্যদের নিয়মিততা</h2>${rank.map(r=>`<div class="hb"><span class="n" style="width:84px">${esc(r.x.name.split(' ')[0])}</span><div class="bar"><i style="width:${r.pc}%"></i></div><b style="width:88px">${r.pc}% • ${r.st} মাস</b></div>`).join('')}<small style="color:var(--mut)">শতাংশ = শুরু থেকে এখন পর্যন্ত জমার হার; মাস = টানা ধারাবাহিকতা</small></div>
+  ${mt?`<div class="card"><h2>💳 পেমেন্ট মাধ্যম</h2>${Object.keys(me_).map(k=>`<div class="hb"><span class="n" style="width:70px">${esc(k)}</span><div class="bar"><i style="width:${me_[k]/mt*100}%"></i></div><b style="width:50px">${me_[k]}টি</b></div>`).join('')}</div>`:''}`}
+
+function fq(v){v=v.trim().toLowerCase();document.querySelectorAll('.mrow[data-n]').forEach(e=>e.classList.toggle('hide',!!v&&!e.dataset.n.includes(v)))}
+
+/* ---- প্রোফাইল ---- */
+function profile(){return`<div class="card" style="text-align:center"><div style="position:relative;display:inline-block;margin-bottom:10px;cursor:pointer" onclick="$('avf').click()">${av(me,76)}<span class="cam">📷</span></div><input type="file" id="avf" accept="image/*" class="hide" onchange="upAvatar(this)"><h2 style="justify-content:center;font-size:18px">${esc(me.name)}</h2><div style="color:var(--mut);font-size:14px">${esc(me.email)}</div><div style="margin-top:8px"><span class="badge">${isAdmin?'MD / Admin':'সদস্য'}</span></div>${me.joined_date?`<div style="margin-top:8px;color:var(--mut);font-size:13px">যোগদান: ${esc(me.joined_date)}</div>`:''}<small style="color:var(--mut)">ছবি বদলাতে ছবিতে চাপুন</small></div>
+${memberCard()}
+${reportCard(me)}
+<div class="card"><h2>📞 আমার ফোন নম্বর</h2><input id="myph" type="tel" inputmode="tel" value="${esc(me.phone||'')}" placeholder="01XXXXXXXXX"><button class="btn out" style="width:100%;margin-top:10px" onclick="saveMyPhone()">সংরক্ষণ</button></div>
+<div class="card"><h2>📄 আমার স্টেটমেন্ট</h2><div class="grid"><button class="btn" onclick="P(()=>stmt(me))">PDF</button><button class="btn gold" onclick="xlMember(me)">Excel</button></div></div>
+${webCard()}
+<div class="card"><button class="btn out" style="width:100%;margin-bottom:10px" onclick="show('reset')">🔑 পাসওয়ার্ড বদলান</button><button class="btn red" style="width:100%" onclick="sb.auth.signOut()">বের হই</button></div><div class="foot">RIAS • ঐক্য • দায়িত্বশীলতা • ইসলামি মূল্যবোধ</div>`}
+
+/* ================= v4 ================= */
+const RQ=()=>D.r||[];
+const tgt=()=>Number((D.s||{}).target_amount)||75000;
+
+/* ---- লক্ষ্যমাত্রা ---- */
+function targetCard(){const f=fundData();if(!f)return'';const t=tgt(),pc=Math.min(100,Math.round(f.contrib/t*100));
+  return`<div class="card"><h2>🎯 আমাদের লক্ষ্যমাত্রা</h2><div class="row"><b>${bn(f.contrib)} / ${bn(t)}</b><span class="badge">${pc}%</span></div><div class="bar"><i style="width:${pc}%"></i></div><small style="color:var(--mut)">বাকি ${bn(Math.max(0,t-f.contrib))} — সবাই মিলে এগিয়ে যাচ্ছি, ইনশাআল্লাহ 🌿</small></div>`}
+
+/* ---- ইনস্টল ব্যানার ---- */
+let DIP=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();DIP=e;if(me&&me.is_approved&&S.tab==='home'&&!S.sel)render()});
+const isStandalone=()=>(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone;
+function installCard(){if(isStandalone()||LS.g('rias_inst')==='1')return'';const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);if(!DIP&&!ios)return'';
+  return`<div class="card" style="border-left:5px solid var(--gold)"><h2>📲 অ্যাপ হিসেবে রাখুন</h2><div style="font-size:13px;color:var(--mut)">${ios?'Safari-তে Share (⬆️) → "Add to Home Screen" চাপুন।':'হোম স্ক্রিনে যোগ করলে অ্যাপের মতো এক ট্যাপে খুলবে।'}</div><div style="display:flex;gap:8px;margin-top:10px">${DIP?'<button class="btn sm" onclick="doInstall()">ইনস্টল করুন</button>':''}<button class="btn sm out" onclick="LS.s(\'rias_inst\',\'1\');render()">পরে</button></div></div>`}
+async function doInstall(){if(!DIP)return;DIP.prompt();try{await DIP.userChoice}catch(e){}DIP=null;render()}
+
+/* ---- ঝুঁকি সতর্কতা ---- */
+const riskList=()=>cons().map(x=>({x,n:dueMonths(x.id).length})).filter(o=>o.n>=3);
+function riskCard(){const r=riskList();if(!r.length)return'';
+  return`<div class="card" style="border-left:5px solid var(--red)"><h2>⚠️ ৩+ মাস বকেয়া</h2>${r.map(o=>`<div class="row" style="padding:6px 0;font-size:14px"><span>${esc(o.x.name)}</span><b class="neg">${o.n} মাস • ${bn(o.n*amt())}</b></div>`).join('')}<small style="color:var(--mut)">যোগাযোগ করতে মাসিক ট্যাব → WhatsApp</small></div>`}
+
+/* ---- কর্জ কিস্তির অনুরোধ ---- */
+function qReqBtn(x){const rm=x.amount-x.paid;if(rm<=0)return'';const p=RQ().find(r=>r.qard_id===x.id&&r.status==='pending');
+  return p?`<div class="msg o" style="margin:8px 0 0">⏳ ${bn(p.amount)} কিস্তির অনুরোধ MD যাচাই করছেন</div>`:`<button class="btn sm gold" style="margin-top:8px" onclick="qReqSheet('${x.id}')">💸 কিস্তি পাঠিয়েছি</button>`}
+function qReqSheet(id){const x=D.q.find(z=>z.id===id);if(!x)return;const rm=x.amount-x.paid;
+  sheet(`${SH('💸 কর্জের কিস্তি')}<small style="color:var(--mut)">${esc(x.purpose||'কর্জ')} • বাকি ${bn(rm)}</small><label>কত টাকা পাঠিয়েছেন (৳)</label><input id="qrA" type="number" inputmode="numeric" max="${rm}">
+  <label>মাধ্যম</label><select id="qrM">${mOpts('বিকাশ')}</select><label>TrxID (ক্যাশ হলে খালি)</label><input id="qrT"><label>নোট (ঐচ্ছিক)</label><input id="qrN">
+  <button class="btn" style="width:100%;margin-top:14px" onclick="sendQReq('${id}')">পাঠান</button>`)}
+async function sendQReq(id){const x=D.q.find(z=>z.id===id),a=Number($('qrA').value),w=$('qrM').value,t=$('qrT').value.trim();if(!(a>0))return alert('অঙ্ক দিন');if(a>x.amount-x.paid)return alert('বাকির চেয়ে বেশি হতে পারে না');if(w!=='ক্যাশ'&&!t)return alert('TrxID দিন');
+  const{error}=await sb.from('qard_requests').insert({member_id:me.id,qard_id:id,amount:a,method:w,trx_id:t||null,note:$('qrN').value.trim()||null});if(error)return alert(error.message);closeSheet();await refresh()}
+function reqList(){const p=D.p.filter(x=>x.status==='pending'),q=RQ().filter(x=>x.status==='pending');if(!p.length&&!q.length)return'';
+  const row=(nm,det,ok,no)=>`<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><div><b>${esc(nm)}</b><br><small style="color:var(--mut)">${det}</small></div><div style="display:flex;gap:6px"><button class="btn sm" onclick="${ok}">✓ গ্রহণ</button><button class="btn sm red" onclick="${no}">✕</button></div></div>`;
+  return`<div class="card" style="border-left:5px solid var(--gold)"><h2>📥 অনুরোধ (${p.length+q.length})</h2>${p.map(x=>{const mm=D.m.find(z=>z.id===x.member_id)||{};return row(mm.name,`মাসিক জমা • ${MONTHS[x.month]} ${x.year} • ${bn(x.amount)} • ${esc(x.method||'')}${x.trx_id?' • '+esc(x.trx_id):''}`,`apvReq('${x.id}')`,`rejReq('${x.id}')`)}).join('')}${q.map(x=>{const mm=D.m.find(z=>z.id===x.member_id)||{},qq=D.q.find(z=>z.id===x.qard_id)||{};return row(mm.name,`কর্জ কিস্তি • ${esc(qq.purpose||'কর্জ')} • ${bn(x.amount)} • ${esc(x.method||'')}${x.trx_id?' • '+esc(x.trx_id):''}`,`apvQ('${x.id}')`,`rejQ('${x.id}')`)}).join('')}<small style="color:var(--mut)">টাকা পেয়ে যাচাইয়ের পর ✓ চাপুন — হিসাব নিজে আপডেট হবে।</small></div>`}
+async function apvQ(id){if(!confirm('টাকা পেয়েছেন? কর্জের পরিশোধ আপডেট হবে।'))return;const{error}=await sb.rpc('approve_qard_payment',{req:id,recv:me.name});if(error)return alert(error.message);await refresh()}
+async function rejQ(id){if(!confirm('অনুরোধটি বাতিল করবেন?'))return;const{error}=await sb.from('qard_requests').update({status:'rejected'}).eq('id',id);if(error)return alert(error.message);await refresh()}
+
+/* ---- রসিদ যাচাই ---- */
+function verifyReceipt(code){const n=parseInt(String(code).replace(/\D/g,''),10);
+  if(!isAdmin)return sheet(SH('🔎 রসিদ যাচাই')+'<div class="msg e">শুধু MD যাচাই করতে পারেন।</div><button class="btn out" style="width:100%;margin-top:12px" onclick="closeSheet()">বন্ধ</button>');
+  const c=D.c.find(x=>+x.receipt_no===n);
+  if(!c)return sheet(SH('🔎 রসিদ যাচাই')+`<div class="msg e">রসিদ ${rno(n)} পাওয়া যায়নি ❌</div><button class="btn out" style="width:100%;margin-top:12px" onclick="closeSheet()">বন্ধ</button>`);
+  const m=D.m.find(x=>x.id===c.member_id)||{};
+  sheet(SH('✅ রসিদ আসল')+`<div class="stat"><div class="l">${rno(c.receipt_no)}</div><div class="v">${bn(c.amount)}</div><small style="color:var(--mut)">${esc(m.name||'')} • ${c.month?MONTHS[c.month]+' '+c.year:esc(pLabel(c.phase))}<br>${esc(c.method||'—')}${c.trx_id?' • '+esc(c.trx_id):''}${c.received_by?' • গ্রহণ: '+esc(c.received_by):''}</small></div><button class="btn out" style="width:100%;margin-top:12px" onclick="closeSheet()">বন্ধ</button>`)}
+function verifyAsk(){const v=prompt('রসিদ নম্বর (যেমন 12 বা RIAS-R-0012)');if(v)verifyReceipt(v)}
+
+/* ---- বার্ষিক রিপোর্ট ---- */
+function yearDoc(y){const ap=D.m.filter(x=>x.is_approved),f=calcFund(),ex=D.e.filter(x=>String(x.spent_on).startsWith(String(y))),by={};ex.forEach(x=>by[x.category]=(by[x.category]||0)+ +x.amount);
+  const rows=ap.map(x=>{const t=D.c.filter(c=>c.member_id===x.id&&c.is_paid!==false&&c.year===y).reduce((s,c)=>s+ +c.amount,0);return`<tr><td>${esc(x.name)}</td><td class="r">${bn(t)}</td><td class="r">${bn(sumC(x.id))}</td><td class="r">${bn(LN(x.id).outstanding)}</td></tr>`}).join('');
+  return prHead(y+' সালের বার্ষিক প্রতিবেদন')+`<h3 style="margin:10px 0 4px">সদস্যদের জমা ও কর্জ</h3><table><tr><th>সদস্য</th><th class="r">${y} সালে জমা</th><th class="r">সর্বমোট জমা</th><th class="r">কর্জ বকেয়া</th></tr>${rows}</table>
+  <h3 style="margin:14px 0 4px">খরচ (${y})</h3><table><tr><th>খাত</th><th class="r">অঙ্ক</th></tr>${Object.keys(by).map(k=>`<tr><td>${esc(k)}</td><td class="r">${bn(by[k])}</td></tr>`).join('')||'<tr><td colspan="2">কোনো খরচ নেই</td></tr>'}</table>
+  <h3 style="margin:14px 0 4px">বিনিয়োগ</h3><table><tr><th>প্রকল্প</th><th class="r">বিনিয়োগ</th><th class="r">ফেরত</th><th>অবস্থা</th></tr>${D.i.map(x=>`<tr><td>${esc(x.title)}</td><td class="r">${bn(x.amount)}</td><td class="r">${bn(x.returned)}</td><td>${x.status==='closed'?'সমাপ্ত':'চলমান'}</td></tr>`).join('')||'<tr><td colspan="4">নেই</td></tr>'}</table>
+  <h3 style="margin:14px 0 4px">ফান্ডের অবস্থান</h3><table>${cashRows(f).map(r=>`<tr><td>${r[0]}</td><td class="r">${r[2]>0?'+':'−'} ${bn(r[1])}</td></tr>`).join('')}<tr><td><b>ব্যালেন্স</b></td><td class="r"><b>${f.cash<0?'−':''}${bn(Math.abs(f.cash))}</b></td></tr></table>
+  <div style="font-size:11px;color:#666;margin-top:6px">* বছর উল্লেখ না থাকা পুরনো পর্যায়ের জমা "সর্বমোট" কলামে ধরা আছে।</div>`+prFoot()}
+function yearRep(){const y=Number($('yrIn').value)||new Date().getFullYear();P(()=>yearDoc(y))}
+
+/* ---- ইম্পোর্ট (Excel/CSV) ---- */
+let IMP=null;
+function toolsCard(){return`<div class="card"><h2>🧰 টুলস</h2>
+  <div class="grid"><input id="yrIn" type="number" value="${new Date().getFullYear()}"><button class="btn" onclick="yearRep()">📘 বার্ষিক রিপোর্ট</button></div>
+  <button class="btn out" style="width:100%;margin-top:10px;text-align:left" onclick="verifyAsk()">🔎 রসিদ যাচাই করুন</button>
+  <div style="margin-top:12px;font-size:13px;color:var(--mut)"><b>📥 শিট থেকে ইম্পোর্ট</b> (Excel/CSV) — আগে টেমপ্লেট নামিয়ে সেই ছাঁচে ডেটা দিন</div>
+  <div class="grid" style="margin-top:6px"><button class="btn sm out" onclick="impTpl('c')">জমার টেমপ্লেট</button><button class="btn sm out" onclick="impTpl('q')">কর্জের টেমপ্লেট</button><button class="btn sm gold" onclick="impPick('c')">জমা ইম্পোর্ট</button><button class="btn sm gold" onclick="impPick('q')">কর্জ ইম্পোর্ট</button></div></div>`}
+function impTpl(k){if(typeof XLSX==='undefined')return alert('Excel লাইব্রেরি লোড হয়নি');const rows=k==='c'?[{member_code:'RIAS-01',year:2026,month:11,amount:500,method:'বিকাশ',trx_id:'',paid_on:'2026-11-10'}]:[{member_code:'RIAS-02',purpose:'কর্জ',amount:3000,paid:0,loan_date:'2026-06-11',due_date:''}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'data');XLSX.writeFile(wb,'RIAS_import_'+(k==='c'?'joma':'qard')+'.xlsx')}
+function impPick(k){if(typeof XLSX==='undefined')return alert('Excel লাইব্রেরি লোড হয়নি');const i=document.createElement('input');i.type='file';i.accept='.xlsx,.xls,.csv';
+  i.onchange=async()=>{const f=i.files[0];if(!f)return;try{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});impPrev(k,XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''}))}catch(e){alert('ফাইল পড়া যায়নি: '+e.message)}};i.click()}
+const dOk=v=>/^\d{4}-\d{2}-\d{2}$/.test(String(v).trim())?String(v).trim():null;
+function impPrev(k,rows){const ok=[],bad=[],seen=new Set();
+  const find=r=>{const code=String(r.member_code||'').trim().toLowerCase(),em=String(r.email||'').trim().toLowerCase();return D.m.find(m=>(code&&String(m.member_code||'').toLowerCase()===code)||(em&&String(m.email||'').toLowerCase()===em))};
+  rows.forEach((r,i)=>{const m=find(r),a=Number(r.amount),ln='সারি '+(i+2);if(!m)return bad.push(ln+': সদস্য পাওয়া যায়নি ('+(r.member_code||r.email||'খালি')+')');if(!(a>0))return bad.push(ln+': অঙ্ক ঠিক নেই');
+    if(k==='c'){const y=Number(r.year),mo=Number(r.month);if(!y||!(mo>=1&&mo<=12))return bad.push(ln+': বছর/মাস ঠিক নেই');const key=m.id+'-'+y+'-'+mo;if(mrow(m.id,y,mo)||seen.has(key))return bad.push(ln+': '+m.name+' '+MONTHS[mo]+' '+y+' আগে থেকেই আছে (বাদ)');seen.add(key);
+      ok.push({member_id:m.id,phase:phaseOf(y,mo),month:mo,year:y,amount:a,is_paid:true,method:String(r.method||'').trim()||null,trx_id:String(r.trx_id||'').trim()||null,received_by:me.name,paid_on:dOk(r.paid_on)})}
+    else{const p=Number(r.paid)||0;if(p>a)return bad.push(ln+': পরিশোধ অঙ্কের বেশি');const ld=dOk(r.loan_date),pu=String(r.purpose||'কর্জ').trim();if(D.q.some(q=>q.member_id===m.id&&+q.amount===a&&(q.loan_date||null)===ld&&(q.purpose||'')===pu))return bad.push(ln+': '+m.name+' এর একই কর্জ আগে থেকেই আছে (বাদ)');
+      ok.push({member_id:m.id,purpose:pu,amount:a,paid:p,loan_date:ld,due_date:dOk(r.due_date)})}});
+  IMP={k,ok};sheet(`${SH('📥 ইম্পোর্ট প্রিভিউ')}<div class="msg o" style="margin-top:0">✅ যোগ হবে: <b>${ok.length}টি</b> • ⚠️ বাদ/ভুল: <b>${bad.length}টি</b></div>${bad.length?`<div style="font-size:12px;color:var(--mut);margin-top:8px;max-height:160px;overflow:auto">${bad.slice(0,30).map(esc).join('<br>')}</div>`:''}<small style="color:var(--mut)">আগের কোনো তথ্য মুছবে না বা বদলাবে না — শুধু নতুনগুলো যোগ হবে।</small><button class="btn" style="width:100%;margin-top:12px" ${ok.length?'':'disabled'} onclick="impGo()">${ok.length}টি যোগ করুন</button><button class="btn out" style="width:100%;margin-top:8px" onclick="closeSheet()">বাতিল</button>`)}
+async function impGo(){if(!IMP||!IMP.ok.length)return;const{error}=await sb.from(IMP.k==='c'?'contributions':'qard_entries').insert(IMP.ok);if(error)return alert(error.message);IMP=null;closeSheet();await refresh();alert('ইম্পোর্ট সম্পন্ন ✅')}
+
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+setMode('login');
+</script>
+</body>
+</html>
